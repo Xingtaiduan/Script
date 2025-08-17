@@ -27,6 +27,8 @@ local Labels = {}
 local Buttons = {}
 local Toggles = {}
 local Options = {}
+setmetatable(Options, {__index = Toggles})
+setmetatable(Toggles, {__index = function() return {} end})
 
 local Library = {
     LocalPlayer = LocalPlayer,
