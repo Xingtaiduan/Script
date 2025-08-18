@@ -43,7 +43,7 @@ local Library = {
         ShowDistance = true,
         MaxDistance = math.huge,
         ShowTracer = false,
-        TracerPosition = "Top",
+        TracerPosition = "Bottom",
         TracerThickness = 1,
         TracerTransparency = 1
     }
