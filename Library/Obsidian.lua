@@ -6947,7 +6947,7 @@ do
         groupbox:AddButton("设为默认", function()
             self:SaveDefault(self.Library.Options.ThemeManager_ThemeList.Value)
             self.Library:Notify(
-                string.format("将默认主题设为 %q", self.Library.Options.ThemeManager_ThemeList.Value)
+                string.format("已将默认主题设为 %q", self.Library.Options.ThemeManager_ThemeList.Value)
             )
         end)
 
@@ -6983,7 +6983,7 @@ do
             self:SaveCustomTheme(name)
             self.Library:Notify(string.format("已覆盖主题 %q", name))
         end)
-        groupbox:AddButton("Delete theme", function()
+        groupbox:AddButton("删除主题", function()
             local name = self.Library.Options.ThemeManager_CustomThemeList.Value
 
             local success, err = self:Delete(name)
@@ -7006,7 +7006,7 @@ do
             then
                 self:SaveDefault(self.Library.Options.ThemeManager_CustomThemeList.Value)
                 self.Library:Notify(
-                    string.format("将默认主题设为 %q", self.Library.Options.ThemeManager_CustomThemeList.Value)
+                    string.format("已将默认主题设为 %q", self.Library.Options.ThemeManager_CustomThemeList.Value)
                 )
             end
         end)
