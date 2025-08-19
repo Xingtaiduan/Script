@@ -5396,7 +5396,7 @@ function Library:CreateWindow(WindowInfo)
 
         SearchBox = New("TextBox", {
             BackgroundColor3 = "MainColor",
-            PlaceholderText = "Search",
+            PlaceholderText = "搜索",
             Size = UDim2.fromScale(1, 1),
             TextScaled = true,
             Visible = not (WindowInfo.DisableSearch or false),
@@ -6459,13 +6459,13 @@ function Library:CreateWindow(WindowInfo)
     end
 
     if Library.IsMobile then
-        local ToggleButton = Library:AddDraggableButton("Toggle", function()
+        local ToggleButton = Library:AddDraggableButton("开关", function()
             Library:Toggle()
         end)
 
-        local LockButton = Library:AddDraggableButton("Lock", function(self)
+        local LockButton = Library:AddDraggableButton("锁定", function(self)
             Library.CantDragForced = not Library.CantDragForced
-            self:SetText(Library.CantDragForced and "Unlock" or "Lock")
+            self:SetText(Library.CantDragForced and "解锁" or "锁定")
         end)
 
         if WindowInfo.MobileButtonsSide == "Right" then
