@@ -6459,13 +6459,13 @@ function Library:CreateWindow(WindowInfo)
     end
 
     if Library.IsMobile then
-        local ToggleButton = Library:AddDraggableButton("开关", function()
+        local ToggleButton = Library:AddDraggableButton("开关UI", function()
             Library:Toggle()
         end)
 
-        local LockButton = Library:AddDraggableButton("锁定", function(self)
+        local LockButton = Library:AddDraggableButton("锁定UI", function(self)
             Library.CantDragForced = not Library.CantDragForced
-            self:SetText(Library.CantDragForced and "解锁" or "锁定")
+            self:SetText(Library.CantDragForced and "解锁UI" or "锁定UI")
         end)
 
         if WindowInfo.MobileButtonsSide == "Right" then
