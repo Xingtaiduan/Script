@@ -3,11 +3,14 @@ local Library, ThemeManager, SaveManager = loadstring(game:HttpGet("https://raw.
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/ESPLibrary.lua"))()
 local Options = Library.Options
 
+local Lighting = game:GetService("Lighting")
+
 --//Functions
 
 local function GeneratorESP(v)
     local progress = v:FindFirstChild("Progress")
     if not progress then return end
+    if progress.Value == 100 then return end
     local ESP = ESPLibrary.Add(v, string.format("发电机[%s%%]", progress.Value), Options.GeneratorESPColor.Value, 15, "GeneratorESP")
     progress:GetPropertyChangedSignal("Value"):Connect(function()
         ESP.Settings.Name = string.format("发电机[%s%%]", progress.Value)
@@ -20,7 +23,7 @@ end
 --//Main
 local Window = Library:CreateWindow({
     Title = "XA Hub",
-    Footer = "被遗弃[beta] v0.0.0.2",
+    Footer = "被遗弃[beta] v0.0.0.3",
     Center = true,
     AutoShow = true,
     Resizable = true,
@@ -94,6 +97,53 @@ LeftGroup:AddToggle("GeneratorESP", {
     end
 })
 
+LeftGroup:AddToggle("ItemESP", {
+    Text = "物品",
+    Default = false,
+    Callback = function(Value)
+    if Value then
+        for _, v in pairs(workspace.Map.Ingame:GetDescendants()) do
+            if v:IsA("Tool") and v:FindFirstChild("ItemRoot") then
+                ESPLibrary.Add(v, v.Name, Options.ItemESPColor.Value, 15, "ItemESP")
+            end
+        end
+    else
+        ESPLibrary.Clear("ItemESP")
+    end
+    end
+}):AddColorPicker("ItemESPColor", {
+    Default = Color3.fromRGB(0, 255, 230),
+    Callback = function(Value)
+        ESPLibrary.Update("ItemESP", {Color = Value})
+    end
+})
+
+local RightGroup = Tab:AddRightGroupbox("其他")
+
+RightGroup:AddToggle("Fullbright", {
+    Text = "高亮",
+    Default = false,
+    Callback = function(Value)
+    while Options.Fullbright.Value do task.wait()
+        Lighting.Ambient = Color3.new(1, 1, 1)
+    end
+    end
+})
+
+RightGroup:AddToggle("NoFog", {
+    Text = "没有雾",
+    Default = false,
+    Callback = function(Value)
+    while Options.NoFog.Value do task.wait()
+        for _, v in pairs(Lighting:GetChildren()) do
+            if v:IsA("Atmosphere") then v:Destroy() end
+        end
+        Lighting.FogStart = 0
+        Lighting.FogEnd = math.huge
+    end
+    end
+})
+
 local Settings = Window:AddTab("UI设置", "settings")
 
 local MenuGroup = Settings:AddLeftGroupbox("菜单", "wrench")
@@ -156,6 +206,8 @@ end))
 Library:GiveSignal(workspace.Map.Ingame.DescendantAdded:Connect(function(v)
     if Options.GeneratorESP.Value and v.Name == "Generator" and v.Parent.Name == "Map" then
         GeneratorESP(v)
+    elseif Options.ItemESP.Value and v:IsA("Tool") and v:FindFirstChild("ItemRoot") then
+        ESPLibrary.Add(v, v.Name, Options.ItemESPColor.Value, 15, "ItemESP")
     end
 end))
 
