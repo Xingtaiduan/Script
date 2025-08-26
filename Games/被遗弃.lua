@@ -5,6 +5,7 @@ local Options = Library.Options
 
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LP = Players.LocalPlayer
 local Character = LP.Character or LP.CharacterAdded:Wait()
@@ -30,7 +31,7 @@ end
 --//Main
 local Window = Library:CreateWindow({
     Title = "XA Hub",
-    Footer = "被遗弃[beta] v0.0.0.4",
+    Footer = "被遗弃[beta] v0.0.0.5",
     Center = true,
     AutoShow = true,
     Resizable = true,
@@ -54,7 +55,7 @@ LeftGroup:AddToggle("AutoGenerator", {
                 v.Remotes.RE:FireServer()
             end
         end
-        task.wait(2)
+        task.wait(math.random(200,350)/100)
     end
     end
 })
@@ -63,11 +64,22 @@ LeftGroup:AddButton("传送到发电机", function()
     if not map then return end
     for i, v in pairs(map:GetChildren()) do
         if v.Name == "Generator" and v.Progress.Value ~= 100 then
-            RootPart.CFrame = v.PrimaryPart.CFrame
+            RootPart.CFrame = v.Positions.Center.CFrame
             break
         end
     end
 end)
+
+LeftGroup:AddToggle("InfStamina", {
+    Text = "无限体力",
+    Default = false, 
+    Callback = function(Value)
+    local module = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
+    while Options.InfStamina.Value do task.wait()
+        module.Stamina = 100
+    end
+    end
+})
 
 local Tab = Window:AddTab("视觉")
 
