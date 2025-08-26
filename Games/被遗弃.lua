@@ -3,7 +3,14 @@ local Library, ThemeManager, SaveManager = loadstring(game:HttpGet("https://raw.
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/ESPLibrary.lua"))()
 local Options = Library.Options
 
+local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
+
+local LP = Players.LocalPlayer
+local Character = LP.Character or LP.CharacterAdded:Wait()
+local RootPart = Character:WaitForChild("HumanoidRootPart", 5)
+
+local map = workspace.Map.Ingame:FindFirstChild("Map")
 
 --//Functions
 
@@ -23,7 +30,7 @@ end
 --//Main
 local Window = Library:CreateWindow({
     Title = "XA Hub",
-    Footer = "被遗弃[beta] v0.0.0.3",
+    Footer = "被遗弃[beta] v0.0.0.4",
     Center = true,
     AutoShow = true,
     Resizable = true,
@@ -33,6 +40,34 @@ local Window = Library:CreateWindow({
 })
 
 local Tab = Window:AddTab("主要")
+
+local LeftGroup = Tab:AddLeftGroupbox("主要")
+
+LeftGroup:AddToggle("AutoGenerator", {
+    Text = "自动修发电机",
+    Default = false, 
+    Callback = function(Value)
+    while Options.AutoGenerator.Value do task.wait()
+        if not map then continue end
+        for i, v in pairs(map:GetChildren()) do
+            if v.Name == "Generator" and v.Progress.Value ~= 100 then
+                v.Remotes.RE:FireServer()
+            end
+        end
+        task.wait(2)
+    end
+    end
+})
+
+LeftGroup:AddButton("传送到发电机", function()
+    if not map then return end
+    for i, v in pairs(map:GetChildren()) do
+        if v.Name == "Generator" and v.Progress.Value ~= 100 then
+            RootPart.CFrame = v.PrimaryPart.CFrame
+            break
+        end
+    end
+end)
 
 local Tab = Window:AddTab("视觉")
 
@@ -82,7 +117,7 @@ LeftGroup:AddToggle("GeneratorESP", {
     Callback = function(Value)
     if Value then
         for _, v in pairs(workspace.Map.Ingame:GetDescendants()) do
-            if v.Name == "Generator" and v.Parent.Name == "Map" then
+            if v.Name == "Generator" and v.Parent == map then
                 GeneratorESP(v)
             end
         end
@@ -204,11 +239,22 @@ Library:GiveSignal(workspace.Players.Killers.ChildAdded:Connect(function(v)
 end))
 
 Library:GiveSignal(workspace.Map.Ingame.DescendantAdded:Connect(function(v)
-    if Options.GeneratorESP.Value and v.Name == "Generator" and v.Parent.Name == "Map" then
+    if Options.GeneratorESP.Value and v.Name == "Generator" and v.Parent == map then
         GeneratorESP(v)
     elseif Options.ItemESP.Value and v:IsA("Tool") and v:FindFirstChild("ItemRoot") then
         ESPLibrary.Add(v, v.Name, Options.ItemESPColor.Value, 15, "ItemESP")
     end
+end))
+
+Library:GiveSignal(workspace.Map.Ingame.ChildAdded:Connect(function(v)
+    if v:IsA("Model") and v.Name == "Map" then
+        map = v
+    end
+end))
+
+Library:GiveSignal(LP.CharacterAdded:Connect(function(newCharacter)
+    Character = newCharacter
+    RootPart = Character:WaitForChild("HumanoidRootPart")
 end))
 
 ThemeManager:SetLibrary(Library)
