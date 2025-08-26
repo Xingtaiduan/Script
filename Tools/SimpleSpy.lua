@@ -336,18 +336,6 @@ TextLabel:GetPropertyChangedSignal("Text"):Connect(function()
     ToolTip.Size = UDim2.new(0, size.X + 4, 0, size.Y + 4)
 end)
 
-Simple.MouseEnter:Connect(function()
-    if not toggle then
-        TweenService:Create(Simple, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(252, 51, 51)}):Play()
-    else
-        TweenService:Create(Simple, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(68, 206, 91)}):Play()
-    end
-end)
-
-Simple.MouseLeave:Connect(function()
-    TweenService:Create(Simple, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-end)
-
 CloseButton.MouseEnter:Connect(function()
     TweenService:Create(CloseButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 60, 60)}):Play()
 end)
@@ -356,15 +344,14 @@ CloseButton.MouseLeave:Connect(function()
     TweenService:Create(CloseButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(37, 36, 38)}):Play()
 end)
 
---- Toggles the remote spy method (when button clicked)
-function onToggleButtonClick()
+Simple.MouseButton1Click:Connect(function()
     if toggle then
         TweenService:Create(Simple, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(252, 51, 51)}):Play()
     else
         TweenService:Create(Simple, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(68, 206, 91)}):Play()
     end
     toggle = not toggle
-end
+end)
 
 --- Reconnects bringBackOnResize if the current viewport changes and also connects it initially
 function connectResize()
@@ -1104,7 +1091,6 @@ if not getgenv().SimpleSpyExecuted then
         mouseInGui = false
         mouseEntered()
     end)
-    Simple.MouseButton1Click:Connect(onToggleButtonClick)
     CloseButton.MouseButton1Click:Connect(shutdown)
     table.insert(connections, UserInputService.InputBegan:Connect(backgroundUserInput))
     connectResize()
