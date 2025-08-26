@@ -6,7 +6,7 @@ local Options = Library.Options
 --//Main
 local Window = Library:CreateWindow({
     Title = "XA Hub",
-    Footer = "被遗弃[beta] v0.0.0.0",
+    Footer = "被遗弃[beta] v0.0.0.1",
     Center = true,
     AutoShow = true,
     Resizable = true,
@@ -56,6 +56,27 @@ LeftGroup:AddToggle("KillerESP", {
     Default = Color3.fromRGB(255, 0, 0),
     Callback = function(Value)
         ESPLibrary.Update("KillerESP", {Color = Value})
+    end
+})
+
+LeftGroup:AddToggle("GeneratorESP", {
+    Text = "发电机",
+    Default = false,
+    Callback = function(Value)
+    if Value then
+        for _, v in pairs(workspace.Map.Ingame:GetDescendants()) do
+            if v.Name == "Generator" and v.Parent.Name == "Map" then
+                ESPLibrary.Add(v, "发电机", Options.GeneratorESPColor.Value, 15, "GeneratorESP")
+            end
+        end
+    else
+        ESPLibrary.Clear("GeneratorESP")
+    end
+    end
+}):AddColorPicker("GeneratorESPColor", {
+    Default = Color3.new(0, 1, 0),
+    Callback = function(Value)
+        ESPLibrary.Update("GeneratorESP", {Color = Value})
     end
 })
 
@@ -115,6 +136,12 @@ end))
 Library:GiveSignal(workspace.Players.Killers.ChildAdded:Connect(function(v)
     if Options.KillerESP.Value then
         ESPLibrary.Add(v, v.Name, Options.KillerESPColor.Value, 15, "KillerESP")
+    end
+end))
+
+Library:GiveSignal(workspace.Map.Ingame.DescendantAdded:Connect(function(v)
+    if Options.GeneratorESP.Value and v.Name == "Generator" and v.Parent.Name == "Map" then
+        ESPLibrary.Add(v, "发电机", Options.GeneratorESPColor.Value, 15, "GeneratorESP")
     end
 end))
 
