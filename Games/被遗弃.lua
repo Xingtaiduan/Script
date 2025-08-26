@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LP = Players.LocalPlayer
 local Character = LP.Character or LP.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid", 5)
 local RootPart = Character:WaitForChild("HumanoidRootPart", 5)
 
 local map = workspace.Map.Ingame:FindFirstChild("Map")
@@ -31,7 +32,7 @@ end
 --//Main
 local Window = Library:CreateWindow({
     Title = "XA Hub",
-    Footer = "被遗弃[beta] v0.0.0.5",
+    Footer = "被遗弃[beta] v0.0.0.6",
     Center = true,
     AutoShow = true,
     Resizable = true,
@@ -74,9 +75,28 @@ LeftGroup:AddToggle("InfStamina", {
     Text = "无限体力",
     Default = false, 
     Callback = function(Value)
-    local module = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
+    local module = require(ReplicatedStorage.Systems.Character.Game.Sprinting)
     while Options.InfStamina.Value do task.wait()
         module.Stamina = 100
+    end
+    end
+})
+
+LeftGroup:AddSlider("WalkSpeed", {
+    Text = "移动速度",
+    Default = 16,
+    Min = 0,
+    Max = 25,
+    Rounding = 0,
+    Compact = true,
+})
+
+LeftGroup:AddToggle("EnabledSpeed", {
+    Text = "启用速度",
+    Default = false, 
+    Callback = function(Value)
+    while Options.EnabledSpeed.Value do task.wait()
+        Humanoid:SetAttribute("BaseSpeed", Options.WalkSpeed.Value)
     end
     end
 })
@@ -266,6 +286,7 @@ end))
 
 Library:GiveSignal(LP.CharacterAdded:Connect(function(newCharacter)
     Character = newCharacter
+    Humanoid = Character:WaitForChild("Humanoid")
     RootPart = Character:WaitForChild("HumanoidRootPart")
 end))
 
