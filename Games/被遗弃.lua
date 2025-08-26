@@ -3,10 +3,24 @@ local Library, ThemeManager, SaveManager = loadstring(game:HttpGet("https://raw.
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/ESPLibrary.lua"))()
 local Options = Library.Options
 
+--//Functions
+
+local function GeneratorESP(v)
+    local progress = v:FindFirstChild("Progress")
+    if not progress then return end
+    local ESP = ESPLibrary.Add(v, string.format("发电机[%s%%]", progress.Value), Options.GeneratorESPColor.Value, 15, "GeneratorESP")
+    progress:GetPropertyChangedSignal("Value"):Connect(function()
+        ESP.Settings.Name = string.format("发电机[%s%%]", progress.Value)
+        if progress.Value == 100 then
+            ESP:Destroy()
+        end
+    end)
+end
+
 --//Main
 local Window = Library:CreateWindow({
     Title = "XA Hub",
-    Footer = "被遗弃[beta] v0.0.0.1",
+    Footer = "被遗弃[beta] v0.0.0.2",
     Center = true,
     AutoShow = true,
     Resizable = true,
@@ -66,7 +80,7 @@ LeftGroup:AddToggle("GeneratorESP", {
     if Value then
         for _, v in pairs(workspace.Map.Ingame:GetDescendants()) do
             if v.Name == "Generator" and v.Parent.Name == "Map" then
-                ESPLibrary.Add(v, "发电机", Options.GeneratorESPColor.Value, 15, "GeneratorESP")
+                GeneratorESP(v)
             end
         end
     else
@@ -141,7 +155,7 @@ end))
 
 Library:GiveSignal(workspace.Map.Ingame.DescendantAdded:Connect(function(v)
     if Options.GeneratorESP.Value and v.Name == "Generator" and v.Parent.Name == "Map" then
-        ESPLibrary.Add(v, "发电机", Options.GeneratorESPColor.Value, 15, "GeneratorESP")
+        GeneratorESP(v)
     end
 end))
 
