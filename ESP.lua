@@ -1,7 +1,7 @@
 --// Variables
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local localPlayer = Players.LocalPlayer
+local LP = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local cache = {}
 
@@ -69,6 +69,11 @@ local function createEsp(player)
     cache[player] = esp
 end
 
+local function getDistance(target)
+    local rootPart = (LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")) or camera
+    return (rootPart.CFrame.p - target.Position).Magnitude
+end
+
 local function isPlayerBehindWall(player)
     local character = player.Character
     if not character then
@@ -81,7 +86,7 @@ local function isPlayerBehindWall(player)
     end
 
     local ray = Ray.new(camera.CFrame.Position, rootPart.Position - camera.CFrame.Position)
-    local hit, position = workspace:FindPartOnRayWithIgnoreList(ray, {localPlayer.Character, character})
+    local hit, position = workspace:FindPartOnRayWithIgnoreList(ray, {LP.Character, character})
     
     return hit ~= nil
 end
@@ -108,7 +113,7 @@ end
 local function updateEsp()
     for player, esp in pairs(cache) do
         local character, team = player.Character, player.Team
-        if character and (not ESP_SETTINGS.TeamCheck or (team and team ~= localPlayer.Team)) then
+        if character and (not ESP_SETTINGS.TeamCheck or (team and team ~= LP.Team)) then
             local rootPart = character:FindFirstChild("HumanoidRootPart")
             local head = character:FindFirstChild("Head")
             local humanoid = character:FindFirstChild("Humanoid")
@@ -159,7 +164,7 @@ local function updateEsp()
                     end
 
                     if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
-                        local distance = (camera.CFrame.p - rootPart.Position).Magnitude
+                        local distance = getDistance(rootPart)
                         esp.distance.Text = string.format("%.1fm", distance)
                         esp.distance.Position = Vector2.new(boxPosition.X + boxSize.X / 2, boxPosition.Y + boxSize.Y + 5)
                         esp.distance.Visible = true
@@ -176,7 +181,7 @@ local function updateEsp()
                         else
                             tracerY = camera.ViewportSize.Y
                         end
-                        if ESP_SETTINGS.TeamCheck and player.Team == localPlayer.Team then
+                        if ESP_SETTINGS.TeamCheck and player.Team == LP.Team then
                             esp.tracer.Visible = false
                         else
                             esp.tracer.Visible = true
@@ -218,13 +223,13 @@ local function updateEsp()
 end
 
 for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= localPlayer then
+    if player ~= LP then
         createEsp(player)
     end
 end
 
 Players.PlayerAdded:Connect(function(player)
-    if player ~= localPlayer then
+    if player ~= LP then
         createEsp(player)
     end
 end)
@@ -234,5 +239,9 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 
 RunService.RenderStepped:Connect(updateEsp)
+
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+    camera = workspace.CurrentCamera
+end)
 
 return ESP_SETTINGS
