@@ -149,6 +149,8 @@ function formatValue(v)
         return "Enum."..tostring(v)
     elseif typ == "EnumItem" then
         return "Enum."..tostring(v.EnumType).."."..v.Name
+    elseif typ == "buffer" then
+        return "buffer.fromstring(\""..formatstr(buffer.tostring(v)).."\")"
     else
         return typ..".new(" .. tostring(v) .. ")"
     end
