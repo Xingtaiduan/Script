@@ -7,6 +7,7 @@ task.delay(5, function()
     loadstring(game:HttpGet("https://raw.gitcode.com/Xingtaiduan/Scripts/raw/main/Webhook.lua"))("Fluent")
 end)
 
+local cloneref = cloneref or function(a) return a end
 local Lighting = cloneref(game:GetService("Lighting"))
 local Players = cloneref(game:GetService("Players"))
 local CoreGui = cloneref(game:GetService("CoreGui"))
