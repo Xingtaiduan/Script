@@ -4,22 +4,11 @@ local LP = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 
 local main = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local up = Instance.new("TextButton")
-local down = Instance.new("TextButton")
-local onof = Instance.new("TextButton")
-local TextLabel = Instance.new("TextLabel")
-local speedbox = Instance.new("TextBox")
-local plus = Instance.new("TextButton")
-local mine = Instance.new("TextButton")
-local closebutton = Instance.new("TextButton")
-local mini = Instance.new("TextButton")
-local mini2 = Instance.new("TextButton")
-
 main.Name = "main"
 main.Parent = cloneref(game.CoreGui)
 main.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
+local Frame = Instance.new("Frame")
 Frame.Parent = main
 Frame.BackgroundColor3 = Color3.fromRGB(163, 255, 137)
 Frame.BorderColor3 = Color3.fromRGB(103, 221, 213)
@@ -28,6 +17,7 @@ Frame.Size = UDim2.new(0, 190, 0, 57)
 Frame.Active = true
 Frame.Draggable = true
 
+local up = Instance.new("TextButton")
 up.Name = "up"
 up.Parent = Frame
 up.BackgroundColor3 = Color3.fromRGB(79, 255, 152)
@@ -37,6 +27,7 @@ up.Text = "上升"
 up.TextColor3 = Color3.fromRGB(0, 0, 0)
 up.TextSize = 14.000
 
+local down = Instance.new("TextButton")
 down.Name = "down"
 down.Parent = Frame
 down.BackgroundColor3 = Color3.fromRGB(215, 255, 121)
@@ -47,6 +38,7 @@ down.Text = "下降"
 down.TextColor3 = Color3.fromRGB(0, 0, 0)
 down.TextSize = 14.000
 
+local onof = Instance.new("TextButton")
 onof.Name = "onof"
 onof.Parent = Frame
 onof.BackgroundColor3 = Color3.fromRGB(255, 249, 74)
@@ -57,6 +49,7 @@ onof.Text = "飞行"
 onof.TextColor3 = Color3.fromRGB(0, 0, 0)
 onof.TextSize = 14.000
 
+local TextLabel = Instance.new("TextLabel")
 TextLabel.Parent = Frame
 TextLabel.BackgroundColor3 = Color3.fromRGB(242, 60, 255)
 TextLabel.Position = UDim2.new(0.469327301, 0, 0, 0)
@@ -68,6 +61,7 @@ TextLabel.TextScaled = true
 TextLabel.TextSize = 14.000
 TextLabel.TextWrapped = true
 
+local plus = Instance.new("TextButton")
 plus.Name = "plus"
 plus.Parent = Frame
 plus.BackgroundColor3 = Color3.fromRGB(133, 145, 255)
@@ -80,6 +74,7 @@ plus.TextScaled = true
 plus.TextSize = 14.000
 plus.TextWrapped = true
 
+local speedbox = Instance.new("TextBox")
 speedbox.Name = "speed"
 speedbox.Parent = Frame
 speedbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -92,6 +87,7 @@ speedbox.TextScaled = true
 speedbox.TextSize = 14.000
 speedbox.TextWrapped = true
 
+local mine = Instance.new("TextButton")
 mine.Name = "mine"
 mine.Parent = Frame
 mine.BackgroundColor3 = Color3.fromRGB(123, 255, 247)
@@ -104,17 +100,19 @@ mine.TextScaled = true
 mine.TextSize = 14.000
 mine.TextWrapped = true
 
+local closebutton = Instance.new("TextButton")
 closebutton.Name = "Close"
-closebutton.Parent = main.Frame
+closebutton.Parent = Frame
 closebutton.BackgroundColor3 = Color3.fromRGB(225, 25, 0)
 closebutton.Font = "SourceSans"
 closebutton.Size = UDim2.new(0, 45, 0, 28)
 closebutton.Text = "X"
 closebutton.TextSize = 30
-closebutton.Position =  UDim2.new(0, 0, -1, 27)
+closebutton.Position = UDim2.new(0, 0, -1, 27)
 
+local mini = Instance.new("TextButton")
 mini.Name = "minimize"
-mini.Parent = main.Frame
+mini.Parent = Frame
 mini.BackgroundColor3 = Color3.fromRGB(192, 150, 230)
 mini.Font = "SourceSans"
 mini.Size = UDim2.new(0, 45, 0, 28)
@@ -122,18 +120,18 @@ mini.Text = "-"
 mini.TextSize = 40
 mini.Position = UDim2.new(0, 44, -1, 27)
 
-mini2.Name = "minimize2"
-mini2.Parent = main.Frame
-mini2.BackgroundColor3 = Color3.fromRGB(192, 150, 230)
-mini2.Font = "SourceSans"
-mini2.Size = UDim2.new(0, 45, 0, 28)
-mini2.Text = "+"
-mini2.TextSize = 40
-mini2.Position = UDim2.new(0, 44, -1, 57)
-mini2.Visible = false
+local mode = Instance.new("TextButton", Frame)
+mode.Size = UDim2.new(0, 50, 0, 10)
+mode.Position = UDim2.new(0, 10, 1, 3)
+mode.TextSize = 16
+mode.Font = "SourceSans"
+mode.Text = "模式：Velocity"
+mode.TextColor3 = Color3.new(1, 1, 1)
+mode.BackgroundTransparency = 1
 
 local flyspeed = 1
 local flying = false
+local flymode = "Velocity"
 
 onof.MouseButton1Down:connect(function()
     flying = not flying
@@ -143,16 +141,25 @@ onof.MouseButton1Down:connect(function()
     local humanoid = LP.Character.Humanoid
     while flying do
         RunService.Heartbeat:Wait()
-        local moveDirection = camera.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
-        local velocity = -((camera.CFrame.LookVector * moveDirection.Z) - (camera.CFrame.RightVector * moveDirection.X))
-        if velocity.Magnitude > 0 then
-            rootPart.Anchored = false
-            rootPart.Velocity = velocity * flyspeed * 10
+        local moveVector = camera.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
+        local moveDirection = -((camera.CFrame.LookVector * moveVector.Z) - (camera.CFrame.RightVector * moveVector.X))
+        if flymode == "Velocity" then
+            if moveDirection.Magnitude > 0 then
+                rootPart.Anchored = false
+                rootPart.Velocity = moveDirection * flyspeed * 10
+            else
+                rootPart.Velocity = Vector3.zero
+                rootPart.Anchored = true
+            end
+            rootPart.CFrame = CFrame.lookAlong(rootPart.CFrame.Position, camera.CFrame.LookVector)
         else
-            rootPart.Velocity = Vector3.zero
-            rootPart.Anchored = true
+            if moveDirection.Magnitude > 0 then
+                moveDirection = moveDirection.Unit
+            end
+            local newPosition = rootPart.Position + moveDirection * flyspeed
+		    rootPart.CFrame = CFrame.new(newPosition, newPosition + camera.CFrame.LookVector)
+		    rootPart.Velocity = Vector3.zero
         end
-        rootPart.CFrame = CFrame.lookAlong(rootPart.CFrame.Position, camera.CFrame.LookVector)
     end
     rootPart.Anchored = false
     LP.Character.Humanoid.PlatformStand = false
@@ -200,6 +207,7 @@ plus.MouseButton1Down:connect(function()
     flyspeed = flyspeed + 1
     speedbox.Text = flyspeed
 end)
+
 mine.MouseButton1Down:connect(function()
     flyspeed = flyspeed - 1
     speedbox.Text = flyspeed
@@ -210,28 +218,22 @@ closebutton.MouseButton1Click:Connect(function()
     main:Destroy()
 end)
 
-mini.MouseButton1Click:Connect(function()
-    up.Visible = false
-    down.Visible = false
-    onof.Visible = false
-    plus.Visible = false
-    speedbox.Visible = false
-    mine.Visible = false
-    mini.Visible = false
-    mini2.Visible = true
-    main.Frame.BackgroundTransparency = 1
-    closebutton.Position =  UDim2.new(0, 0, -1, 57)
+mode.MouseButton1Click:Connect(function()
+    flymode = flymode == "Velocity" and "CFrame" or "Velocity"
+    mode.Text = "模式："..flymode
 end)
 
-mini2.MouseButton1Click:Connect(function()
-    up.Visible = true
-    down.Visible = true
-    onof.Visible = true
-    plus.Visible = true
-    speedbox.Visible = true
-    mine.Visible = true
-    mini.Visible = true
-    mini2.Visible = false
-    main.Frame.BackgroundTransparency = 0 
-    closebutton.Position =  UDim2.new(0, 0, -1, 27)
+local visible = true
+mini.MouseButton1Click:Connect(function()
+    visible = not visible
+    up.Visible = visible
+    down.Visible = visible
+    onof.Visible = visible
+    plus.Visible = visible
+    speedbox.Visible = visible
+    mine.Visible = visible
+    mini.Text = visible and "-" or "+"
+    Frame.BackgroundTransparency = visible and 0 or 1
+    mini.Position = visible and UDim2.new(0, 44, -1, 27) or UDim2.new(0, 44, -1, 57)
+    closebutton.Position = visible and UDim2.new(0, 0, -1, 27) or UDim2.new(0, 0, -1, 57)
 end)
