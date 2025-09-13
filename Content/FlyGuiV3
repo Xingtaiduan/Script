@@ -133,6 +133,7 @@ local flyspeed = 1
 local flying = false
 local flymode = "Velocity"
 
+local lastPosition
 onof.MouseButton1Down:connect(function()
     flying = not flying
     LP.Character.Humanoid.PlatformStand = flying
@@ -140,7 +141,7 @@ onof.MouseButton1Down:connect(function()
     local rootPart = LP.Character.HumanoidRootPart
     local humanoid = LP.Character.Humanoid
     while flying do
-        RunService.Heartbeat:Wait()
+        local dt = RunService.Heartbeat:Wait()
         local moveVector = camera.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
         local moveDirection = -((camera.CFrame.LookVector * moveVector.Z) - (camera.CFrame.RightVector * moveVector.X))
         if flymode == "Velocity" then
@@ -155,12 +156,15 @@ onof.MouseButton1Down:connect(function()
         else
             if moveDirection.Magnitude > 0 then
                 moveDirection = moveDirection.Unit
+                lastPosition = rootPart.Position + moveDirection * flyspeed * dt * 50
+            elseif not lastPosition then
+                lastPosition = rootPart.Position
             end
-            local newPosition = rootPart.Position + moveDirection * flyspeed
-		    rootPart.CFrame = CFrame.new(newPosition, newPosition + camera.CFrame.LookVector)
+		    rootPart.CFrame = CFrame.new(lastPosition, lastPosition + camera.CFrame.LookVector)
 		    rootPart.Velocity = Vector3.zero
         end
     end
+    lastPosition = nil
     rootPart.Anchored = false
     LP.Character.Humanoid.PlatformStand = false
 end)
