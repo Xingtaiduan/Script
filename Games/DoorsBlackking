@@ -351,6 +351,9 @@ local function main(v)
         if name[v.Text] then
             v.Text = name[v.Text]
         else
+            for suffix, fix in pairs(stuffix) do
+                v.Text = v.Text:gsub(stuffix, fix)
+            end
             v:GetPropertyChangedSignal("Text"):Connect(function()
                 if name[v.Text] then
                     v.Text = name[v.Text]
