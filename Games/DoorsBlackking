@@ -313,23 +313,26 @@ local name = {
 ["Interact Ladder to Bypass Anti Cheat"] = "互动梯子以绕过反作弊",
 ["Bypass Anti Cheat is Disabled"] = "绕过反作弊已关闭",
 ["[Event Notification] : Seek Chase GoodLuck!"] = "[事件通知] : Seek追逐战祝你好运!",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
-[""] = "",
+}
+
+local stuffix = {
+["Speed Boost"] = "速度提升",
+["Max Slope Angle"] = "最大爬坡角度",
+["Field of View"] = "视野",
+["DistanceZoom"] = "缩放距离",
+["Max Interact Distance"] = "最大交互距离",
+["Auto Hide Delay"] = "自动躲藏延迟",
+["Number of items"] = "物品数量",
+["FillTransparency"] = "填充透明度",
+["OutlineTransparency"] = "边框透明度",
+["Time"] = "时间",
+["Volume"] = "音量",
+["Teleport Delay"] = "传送延迟",
+["Drop Delay"] = "丢弃延迟",
+["LoopDelay"] = "循环延迟",
+["MaxPlayers"] = "最大玩家数",
+["TextSize"] = "文本大小",
+["Done Anchor Solver Loop"] = "完成锚点解决器循环",
 [""] = "",
 [""] = "",
 [""] = "",
@@ -343,172 +346,20 @@ local name = {
 [""] = ""
 }
 
-local espname = {
-["Dupe / Fake Door"] = "Dupe / 假门",
-["Lever"] = "拉杆",
-["Candle"] = "蜡烛",
-["Bandage"] = "绷带",
-["Breaker"] = "断路器",
-["Shakelight"] = "手摇灯",
-["Fuse"] = "保险丝",
-["Generator"] = "发电机",
-["Glowsticks"] = "荧光棒",
-["Locker"] = "储物柜",
-["Anchor : A"] = "锚点 : A",
-["Anchor : B"] = "锚点 : B",
-["Anchor : C"] = "锚点 : C",
-["Anchor : D"] = "锚点 : D",
-["WaterPump"] = "水泵"
-}
-
-local floor = game:GetService("ReplicatedStorage"):WaitForChild("GameData"):WaitForChild("Floor")
 local function main(v)
-    if floor.Value == "Fools" then
-        if v:IsA("TextLabel") or v:IsA("TextButton") then
-            repeat task.wait() until v.Text ~= "Label"
-        end
-    end
     if v:IsA("TextLabel") then
         if name[v.Text] then
             v.Text = name[v.Text]
-        elseif v.Text == "Speed Boost : 6" then
-            v.Text = "速度提升 : 6"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Speed Boost : (%w+)")
-                if textnumber then
-                    v.Text = "速度提升 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Max Slope Angle : 49" then
-            v.Text = "最大倾斜角 : 49"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Max Slope Angle : (%w+)")
-                if textnumber then
-                    v.Text = "最大倾斜角 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Field of View : 70" then
-            v.Text = "视野 : 70"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Field of View : (%w+)")
-                if textnumber then
-                    v.Text = "视野 : "..textnumber
-                end
-            end)
-        elseif v.Text == "DistanceZoom : 10" then
-            v.Text = "缩放距离 : 10"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "DistanceZoom : (%w+)")
-                if textnumber then
-                    v.Text = "缩放距离 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Max Interact Distance : 14.5" then
-            v.Text = "最大交互距离 : 14.5"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Max Interact Distance : (%w+.%w+)") or string.match(v.Text, "Max Interact Distance : (%w+)")
-                if textnumber then
-                    v.Text = "最大交互距离 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Auto Hide Delay : 1" then
-            v.Text = "自动隐藏延迟 : 1"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Auto Hide Delay : (%w+.%w+)") or string.match(v.Text, "Auto Hide Delay : (%w+)")
-                if textnumber then
-                    v.Text = "自动隐藏延迟 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Number of items: 1" then
-            v.Text = "物品数量 : 1"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Number of items: (%w+)")
-                if textnumber then
-                    v.Text = "物品数量 : "..textnumber
-                end
-            end)
-        elseif v.Text == "FillTransparency : 0.9" then
-            v.Text = "填充透明度 : 0.9"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "FillTransparency : (%w+.%w+)") or string.match(v.Text, "FillTransparency : (%w+)")
-                if textnumber then
-                    v.Text = "填充透明度 : "..textnumber
-                end
-            end)
-        elseif v.Text == "OutlineTransparency : 0" then
-            v.Text = "边框透明度 : 0"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "OutlineTransparency : (%w+.%w+)") or string.match(v.Text, "OutlineTransparency : (%w+)")
-                if textnumber then
-                    v.Text = "边框透明度 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Time : 5" then
-            v.Text = "时间 : 5"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Time : (%w+)")
-                if textnumber then
-                    v.Text = "时间 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Volume : 5" then
-            v.Text = "音量 : 5"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Volume : (%w+)")
-                if textnumber then
-                    v.Text = "音量 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Teleport Delay : 0.5" then
-            v.Text = "传送延迟 : 0.5"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Teleport Delay : (%w+.%w+)") or string.match(v.Text, "Teleport Delay : (%w+)")
-                if textnumber then
-                    v.Text = "传送延迟 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Drop Delay : 0.25" then
-            v.Text = "丢弃延迟 : 0.25"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Drop Delay : (%w+.%w+)") or string.match(v.Text, "Drop Delay : (%w+)")
-                if textnumber then
-                    v.Text = "丢弃延迟 : "..textnumber
-                end
-            end)
-        elseif v.Text == "LoopDelay : 0" then
-            v.Text = "循环延迟 : 0"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "LoopDelay : (%w+.%w+)") or string.match(v.Text, "LoopDelay : (%w+)")
-                if textnumber then
-                    v.Text = "循环延迟 : "..textnumber
-                end
-            end)
-        elseif v.Text == "MaxPlayers : 12" then
-            v.Text = "最大玩家 : 12"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "MaxPlayers : (%w+)")
-                if textnumber then
-                    v.Text = "最大玩家 : "..textnumber
-                end
-            end)
-        elseif v.Text == "TextSize : 20" then
-            v.Text = "文本大小 : 20"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "TextSize : (%w+)")
-                if textnumber then
-                    v.Text = "文本大小 : "..textnumber
-                end
-            end)
-        elseif v.Text == "Done Anchor Solver Loop : 4" then
-            v.Text = "完成锚点解决器循环 : 4"
-            v:GetPropertyChangedSignal("Text"):Connect(function()
-                textnumber = string.match(v.Text, "Done Anchor Solver Loop : (%w+)")
-                if textnumber then
-                    v.Text = "完成锚点解决器循环 : "..textnumber
-                end
-            end)
         else
-            --appendfile("1.txt", v.Text.."\n\n")
+            v:GetPropertyChangedSignal("Text"):Connect(function()
+                if name[v.Text] then
+                    v.Text = name[v.Text]
+                else
+                    for suffix, fix in pairs(stuffix) do
+                        v.Text = v.Text:gsub(stuffix, fix)
+                    end
+                end
+            end)
         end
     end
     if v:IsA("TextButton") then
@@ -525,14 +376,6 @@ Connect = gethui().DescendantAdded:Connect(function(child)
         child.DescendantAdded:Connect(main)
     end
 end)
---[[
---esp
-workspace.CurrentRooms.DescendantAdded:Connect(function(v)
-    if v:IsA("TextLabel") then
-        if espname[v.Text] then
-            v.Text = espname[v.Text]
-        end
-    end
-end)]]
+
 task.wait()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkDoorsKing/Doors/main/Main"))()
