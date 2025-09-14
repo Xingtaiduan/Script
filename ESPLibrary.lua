@@ -1,6 +1,6 @@
-if getgenv().ESPLibrary then
-    return getgenv().ESPLibrary
-end
+--if getgenv().ESPLibrary then
+    --return getgenv().ESPLibrary
+--end
 
 local cloneref = cloneref or function(a) return a end
 local Players = cloneref(game:GetService("Players"))
