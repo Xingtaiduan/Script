@@ -166,7 +166,7 @@ onof.MouseButton1Down:connect(function()
     end
     lastPosition = nil
     rootPart.Anchored = false
-    LP.Character.Humanoid.PlatformStand = false
+    humanoid.PlatformStand = false
 end)
 
 local tis
