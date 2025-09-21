@@ -136,10 +136,10 @@ local flymode = "Velocity"
 local lastPosition
 onof.MouseButton1Down:connect(function()
     flying = not flying
-    LP.Character.Humanoid.PlatformStand = flying
+    local humanoid = LP.Character:FindFirstChildOfClass("Humanoid")
+    humanoid.PlatformStand = flying
     if not flying then return end
     local rootPart = LP.Character.HumanoidRootPart
-    local humanoid = LP.Character.Humanoid
     while flying do
         local dt = RunService.Heartbeat:Wait()
         local moveVector = camera.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
@@ -236,6 +236,7 @@ mini.MouseButton1Click:Connect(function()
     plus.Visible = visible
     speedbox.Visible = visible
     mine.Visible = visible
+    mode.Visible = visible
     mini.Text = visible and "-" or "+"
     Frame.BackgroundTransparency = visible and 0 or 1
     mini.Position = visible and UDim2.new(0, 44, -1, 27) or UDim2.new(0, 44, -1, 57)
