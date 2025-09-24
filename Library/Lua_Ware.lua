@@ -5,21 +5,20 @@ local Library = {}
 Library.currentTab = nil
 Library.flags = {}
 
-local services = setmetatable({}, {
-    __index = function(t, k)
-        return cloneref(game.GetService(game, k))
-    end
-})
+local CoreGui = cloneref(game:GetService("CoreGui"))
+local Players = cloneref(game:GetService("Players"))
+local TweenService = cloneref(game:GetService("TweenService"))
+local UserInputService = cloneref(game:GetService("UserInputService"))
 
-local gethui = gethui or function() return services.CoreGui end
-local mouse = services.Players.LocalPlayer:GetMouse()
+local gethui = gethui or function() return CoreGui end
+local mouse = cloneref(Players.LocalPlayer:GetMouse())
 
-function Tween(obj, t, data)
-    services.TweenService:Create(obj, TweenInfo.new(t[1], Enum.EasingStyle[t[2]], Enum.EasingDirection[t[3]]), data):Play()
+local function Tween(obj, t, data)
+    TweenService:Create(obj, TweenInfo.new(t[1], Enum.EasingStyle[t[2]], Enum.EasingDirection[t[3]]), data):Play()
     return true
 end
 
-function Ripple(obj)
+local function Ripple(obj)
     spawn(
         function()
             if obj.ClipsDescendants ~= true then
@@ -57,7 +56,7 @@ end
 
 -- # Switch Tabs # --
 local switchingTabs = false
-function switchTab(new)
+local function switchTab(new)
     if switchingTabs then
         return
     end
@@ -65,8 +64,8 @@ function switchTab(new)
     if old == nil then
         new[2].Visible = true
         Library.currentTab = new
-        services.TweenService:Create(new[1], TweenInfo.new(0.1), {ImageTransparency = 0}):Play()
-        services.TweenService:Create(new[1].TabText, TweenInfo.new(0.1), {TextTransparency = 0}):Play()
+        TweenService:Create(new[1], TweenInfo.new(0.1), {ImageTransparency = 0}):Play()
+        TweenService:Create(new[1].TabText, TweenInfo.new(0.1), {TextTransparency = 0}):Play()
         return
     end
 
@@ -76,10 +75,10 @@ function switchTab(new)
     switchingTabs = true
     Library.currentTab = new
 
-    services.TweenService:Create(old[1], TweenInfo.new(0.1), {ImageTransparency = 0.2}):Play()
-    services.TweenService:Create(new[1], TweenInfo.new(0.1), {ImageTransparency = 0}):Play()
-    services.TweenService:Create(old[1].TabText, TweenInfo.new(0.1), {TextTransparency = 0.2}):Play()
-    services.TweenService:Create(new[1].TabText, TweenInfo.new(0.1), {TextTransparency = 0}):Play()
+    TweenService:Create(old[1], TweenInfo.new(0.1), {ImageTransparency = 0.2}):Play()
+    TweenService:Create(new[1], TweenInfo.new(0.1), {ImageTransparency = 0}):Play()
+    TweenService:Create(old[1].TabText, TweenInfo.new(0.1), {TextTransparency = 0.2}):Play()
+    TweenService:Create(new[1].TabText, TweenInfo.new(0.1), {TextTransparency = 0}):Play()
 
     old[2].Visible = false
     new[2].Visible = true
@@ -124,7 +123,7 @@ function Library.new(Library, name)
     dogent.Parent = gethui()
     Library.Gui = dogent
 
-    function ToggleUILib()
+    local function ToggleUILib()
         Main.Visible = not Main.Visible
     end
 
@@ -243,7 +242,7 @@ function Library.new(Library, name)
     Open.Draggable = true
     Open.MouseButton1Click:Connect(ToggleUILib)
     
-    services.UserInputService.InputBegan:Connect(function(input)
+    UserInputService.InputBegan:Connect(function(input)
         if input.KeyCode == Enum.KeyCode.LeftControl then
             ToggleUILib()
         end
@@ -566,7 +565,7 @@ function Library.new(Library, name)
                         if Library.flags[flag] == state then
                             return
                         end
-                        services.TweenService:Create(
+                        TweenService:Create(
                             ToggleSwitch,
                             TweenInfo.new(0.2),
                             {
@@ -682,7 +681,7 @@ function Library.new(Library, name)
                 UIPadding.Parent = KeybindBtn
                 UIPadding.PaddingRight = UDim.new(0, 6)
 
-                services.UserInputService.InputBegan:Connect(
+                UserInputService.InputBegan:Connect(
                     function(inp, gpe)
                         if gpe then
                             return
@@ -701,7 +700,7 @@ function Library.new(Library, name)
                     function()
                         KeybindValue.Text = "..."
                         wait()
-                        local key, uwu = services.UserInputService.InputEnded:Wait()
+                        local key, uwu = UserInputService.InputEnded:Wait()
                         local keyName = tostring(key.KeyCode.Name)
                         if key.UserInputType ~= Enum.UserInputType.Keyboard then
                             KeybindValue.Text = keyTxt
@@ -1001,7 +1000,7 @@ function Library.new(Library, name)
                     end
                 )
 
-                services.UserInputService.InputEnded:Connect(
+                UserInputService.InputEnded:Connect(
                     function(input)
                         if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
                             dragging = false
@@ -1009,7 +1008,7 @@ function Library.new(Library, name)
                     end
                 )
 
-                services.UserInputService.InputChanged:Connect(
+                UserInputService.InputChanged:Connect(
                     function(input)
                         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                             funcs:SetValue()
