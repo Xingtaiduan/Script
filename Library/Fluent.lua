@@ -20,7 +20,7 @@ local RunService = cloneref(game:GetService("RunService"))
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
-local Mouse = LocalPlayer:GetMouse()
+local Mouse = cloneref(LocalPlayer:GetMouse())
 
 if getgenv().Fluent then
     getgenv().Fluent:Destroy()
