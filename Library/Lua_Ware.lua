@@ -1203,6 +1203,7 @@ function Library.new(Library, name)
 
                 local funcs = {}
                 funcs.AddOption = function(self, option)
+                    option = tostring(option)
                     local Option = Instance.new("TextButton")
                     local OptionC = Instance.new("UICorner")
 
@@ -1233,6 +1234,7 @@ function Library.new(Library, name)
                 end
 
                 funcs.RemoveOption = function(self, option)
+                    option = tostring(option)
                     local option = DropdownModule:FindFirstChild("Option_" .. option)
                     if option then
                         option:Destroy()
