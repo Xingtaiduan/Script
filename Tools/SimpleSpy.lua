@@ -190,27 +190,229 @@ end
 local Highlight = loadstring(game:HttpGet("https://raw.githubusercontent.com/78n/SimpleSpy/main/Highlight.lua"))()
 local Serialize = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/Tools/Serializer.lua"))()
 
-local SimpleSpy3 = Create("ScreenGui",{Name = "SimpleSpy",ResetOnSpawn = false})
+local SimpleSpy3 = Create("ScreenGui",{
+    Name = "SimpleSpy",
+    ResetOnSpawn = false
+})
 local Storage = Create("Folder",{})
-local Background = Create("Frame",{Parent = SimpleSpy3,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Position = UDim2.new(0, 170, 0, 100),Size = UDim2.new(0, 450, 0, 268),Active = true,Draggable = true})
-local LeftPanel = Create("Frame",{Parent = Background,BackgroundColor3 = Color3.fromRGB(53, 52, 55),BorderSizePixel = 0,Position = UDim2.new(0, 0, 0, 19),Size = UDim2.new(0, 131, 0, 249)})
-local LogList = Create("ScrollingFrame",{Parent = LeftPanel,Active = true,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,BorderSizePixel = 0,Position = UDim2.new(0, 0, 0, 9),Size = UDim2.new(0, 131, 0, 232),CanvasSize = UDim2.new(0, 0, 0, 0),ScrollBarThickness = 4})
-local UIListLayout = Create("UIListLayout",{Parent = LogList,HorizontalAlignment = Enum.HorizontalAlignment.Center,SortOrder = Enum.SortOrder.LayoutOrder})
-local RightPanel = Create("Frame",{Parent = Background,BackgroundColor3 = Color3.fromRGB(37, 36, 38),BorderSizePixel = 0,Position = UDim2.new(0, 131, 0, 19),Size = UDim2.new(0, 319, 0, 249)})
-local CodeBox = Create("Frame",{Parent = RightPanel,BackgroundColor3 = Color3.new(0.0823529, 0.0745098, 0.0784314),BorderSizePixel = 0,Size = UDim2.new(0, 319, 0, 119)})
-local ScrollingFrame = Create("ScrollingFrame",{Parent = RightPanel,Active = true,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Position = UDim2.new(0, 0, 0.5, 0),Size = UDim2.new(1, 0, 0.5, -9),CanvasSize = UDim2.new(0, 0, 0, 0),ScrollBarThickness = 4})
-local UIGridLayout = Create("UIGridLayout",{Parent = ScrollingFrame,HorizontalAlignment = Enum.HorizontalAlignment.Center,SortOrder = Enum.SortOrder.LayoutOrder,CellPadding = UDim2.new(0, 0, 0, 0),CellSize = UDim2.new(0, 94, 0, 27)})
-local TopBar = Create("Frame",{Parent = Background,BackgroundColor3 = Color3.fromRGB(37, 35, 38),BorderSizePixel = 0,Size = UDim2.new(0, 450, 0, 19)})
-local Simple = Create("TextButton",{Parent = TopBar,BackgroundColor3 = Color3.new(1, 1, 1),AutoButtonColor = false,BackgroundTransparency = 1,Position = UDim2.new(0, 5, 0, 0),Size = UDim2.new(0, 57, 0, 18),Font = Enum.Font.SourceSansBold,Text =  "SimpleSpy",TextColor3 = Color3.new(1, 1, 1),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left})
-local CloseButton = Create("TextButton",{Parent = TopBar,BackgroundColor3 = Color3.new(0.145098, 0.141176, 0.14902),BorderSizePixel = 0,Position = UDim2.new(1, -19, 0, 0),Size = UDim2.new(0, 19, 0, 19),Font = Enum.Font.SourceSans,Text = "",TextColor3 = Color3.new(0, 0, 0),TextSize = 14})
-local ImageLabel = Create("ImageLabel",{Parent = CloseButton,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Position = UDim2.new(0, 5, 0, 5),Size = UDim2.new(0, 9, 0, 9),Image = "http://www.roblox.com/asset/?id=5597086202"})
-local MinimizeButton = Create("TextButton",{Parent = TopBar,BackgroundColor3 = Color3.new(0.145098, 0.141176, 0.14902),BorderSizePixel = 0,Position = UDim2.new(1, -38, 0, 0),Size = UDim2.new(0, 19, 0, 19),Font = Enum.Font.SourceSans,Text = "",TextColor3 = Color3.new(0, 0, 0),TextSize = 14})
-local ImageLabel_1 = Create("ImageLabel",{Parent = MinimizeButton,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Position = UDim2.new(0, 5, 0, 5),Size = UDim2.new(0, 9, 0, 9),Image = "http://www.roblox.com/asset/?id=5597105827"})
-local ToolTip = Create("Frame",{Parent = SimpleSpy3,BackgroundColor3 = Color3.fromRGB(26, 26, 26),BackgroundTransparency = 0.1,BorderColor3 = Color3.new(1, 1, 1),Size = UDim2.new(0, 200, 0, 50),ZIndex = 3,Visible = false})
-local TextLabel = Create("TextLabel",{Parent = ToolTip,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Position = UDim2.new(0, 2, 0, 2),Size = UDim2.new(0, 196, 0, 46),ZIndex = 3,Font = Enum.Font.SourceSans,Text = "This is some slightly longer text.",TextColor3 = Color3.new(1, 1, 1),TextSize = 14,TextWrapped = true,TextXAlignment = Enum.TextXAlignment.Left,TextYAlignment = Enum.TextYAlignment.Top})
+local Background = Create("Frame",{
+    Name = "Background",
+    Parent = SimpleSpy3,
+    BackgroundColor3 = Color3.new(1, 1, 1),
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0, 180, 0, 36),
+    Size = UDim2.new(0, 450, 0, 286),
+    Active = true,
+    Draggable = true
+})
+
+local LeftPanel = Create("Frame",{
+    Name = "LeftPanel",
+    Parent = Background,
+    BackgroundColor3 = Color3.fromRGB(53, 52, 55),
+    BorderSizePixel = 0,
+    Position = UDim2.new(0, 0, 1, 0),
+    AnchorPoint = Vector2.new(0, 1),
+    Size = UDim2.new(0, 131, 0, 249)
+})
+
+local LogList = Create("ScrollingFrame",{
+    Parent = LeftPanel,
+    Active = true,
+    BackgroundColor3 = Color3.new(1, 1, 1),
+    BackgroundTransparency = 1,
+    BorderSizePixel = 0,
+    Position = UDim2.new(0, 0, 0, 9),
+    Size = UDim2.new(0, 131, 0, 232),
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    ScrollBarThickness = 4
+})
+
+local UIListLayout = Create("UIListLayout", {
+    Parent = LogList,
+    HorizontalAlignment = Enum.HorizontalAlignment.Center,
+    SortOrder = Enum.SortOrder.LayoutOrder
+})
+
+local LogList2 = LogList:Clone()
+LogList2.Parent = LeftPanel
+LogList2.Visible = false
+
+local RightPanel = Create("Frame", {
+    Parent = Background,
+    BackgroundColor3 = Color3.fromRGB(37, 36, 38),
+    BorderSizePixel = 0,
+    Position = UDim2.new(0, 131, 1, 0),
+    AnchorPoint = Vector2.new(0, 1),
+    Size = UDim2.new(0, 319, 0, 249)
+})
+
+local CodeBox = Create("Frame", {
+    Parent = RightPanel,
+    BackgroundColor3 = Color3.fromRGB(21, 19, 21),
+    BorderSizePixel = 0,
+    Size = UDim2.new(0, 319, 0, 119)
+})
+
+local ScrollingFrame = Create("ScrollingFrame", {
+    Parent = RightPanel,
+    Active = true,
+    BackgroundColor3 = Color3.new(1, 1, 1),
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0, 0, 0.5, 0),
+    Size = UDim2.new(1, 0, 0.5, -9),
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    ScrollBarThickness = 4
+})
+
+local UIGridLayout = Create("UIGridLayout", {
+    Parent = ScrollingFrame,
+    HorizontalAlignment = Enum.HorizontalAlignment.Center,
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    CellPadding = UDim2.new(0, 0, 0, 0),
+    CellSize = UDim2.new(0, 94, 0, 27)
+})
+
+local TopBar = Create("Frame", {
+    Name = "TopBar",
+    Parent = Background,
+    BackgroundColor3 = Color3.fromRGB(37, 35, 38),
+    BorderSizePixel = 0,
+    Size = UDim2.new(0, 450, 0, 19)
+})
+
+local Simple = Create("TextButton", {
+    Name = "Simple",
+    Parent = TopBar,
+    BackgroundColor3 = Color3.new(1, 1, 1),
+    AutoButtonColor = false,
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0, 5, 0, 0),
+    Size = UDim2.new(0, 57, 0, 18),
+    Font = Enum.Font.SourceSansBold,
+    Text = "SimpleSpy",
+    TextColor3 = Color3.new(1, 1, 1),
+    TextSize = 14,
+    TextXAlignment = Enum.TextXAlignment.Left
+})
+
+local CloseButton = Create("TextButton", {
+    Name = "CloseButton",
+    Parent = TopBar,
+    BackgroundColor3 = Color3.new(0.145098, 0.141176, 0.14902),
+    BorderSizePixel = 0,
+    Position = UDim2.new(1, - 19, 0, 0),
+    Size = UDim2.new(0, 19, 0, 19),
+    Font = Enum.Font.SourceSans,
+    Text = "",
+    TextColor3 = Color3.new(0, 0, 0),
+    TextSize = 14
+})
+
+local ImageLabel = Create("ImageLabel", {
+    Parent = CloseButton,
+    BackgroundColor3 = Color3.new(1, 1, 1),
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0, 5, 0, 5),
+    Size = UDim2.new(0, 9, 0, 9),
+    Image = "http://www.roblox.com/asset/?id=5597086202"
+})
+
+local MinimizeButton = Create("TextButton", {
+    Name = "MinimizeButton",
+    Parent = TopBar,
+    BackgroundColor3 = Color3.new(0.145098, 0.141176, 0.14902),
+    BorderSizePixel = 0,
+    Position = UDim2.new(1, - 38, 0, 0),
+    Size = UDim2.new(0, 19, 0, 19),
+    Font = Enum.Font.SourceSans,
+    Text = "",
+    TextColor3 = Color3.new(0, 0, 0),
+    TextSize = 14
+})
+
+local ImageLabel_1 = Create("ImageLabel", {
+    Parent = MinimizeButton,
+    BackgroundColor3 = Color3.new(1, 1, 1),
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0, 5, 0, 5),
+    Size = UDim2.new(0, 9, 0, 9),
+    Image = "http://www.roblox.com/asset/?id=5597105827"
+})
+
+--ToolTip
+local ToolTip = Create("Frame", {
+    Name = ToolTip,
+    Parent = SimpleSpy3,
+    BackgroundColor3 = Color3.fromRGB(26, 26, 26),
+    BackgroundTransparency = 0.1,
+    BorderColor3 = Color3.new(1, 1, 1),
+    Size = UDim2.new(0, 200, 0, 50),
+    ZIndex = 3,
+    Visible = false
+})
+
+local TextLabel = Create("TextLabel", {
+    Parent = ToolTip,
+    BackgroundColor3 = Color3.new(1, 1, 1),
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0, 2, 0, 2),
+    Size = UDim2.new(0, 196, 0, 46),
+    ZIndex = 3,
+    Font = Enum.Font.SourceSans,
+    Text = "This is some slightly longer text.",
+    TextColor3 = Color3.new(1, 1, 1),
+    TextSize = 14,
+    TextWrapped = true,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Top
+})
+
+--Modes
+
+local Modes = Instance.new("Frame", Background)
+Modes.Name = "Modes"
+Modes.BorderSizePixel = 0;
+Modes.BackgroundColor3 = Color3.fromRGB(38, 36, 39);
+Modes.Size = UDim2.new(0, 450, 0, 19);
+Modes.Position = UDim2.new(0, 0, 0, 18);
+
+local Outcoming = Instance.new("TextButton", Modes);
+Outcoming.BorderSizePixel = 0;
+Outcoming.TextColor3 = Color3.fromRGB(255, 255, 255);
+Outcoming.BackgroundColor3 = Color3.fromRGB(76, 76, 76);
+Outcoming.BackgroundTransparency = 0.5;
+Outcoming.Size = UDim2.new(0.5, 0, 1, 0);
+Outcoming.Text = "Outcoming"
+
+local Incoming = Instance.new("TextButton", Modes);
+Incoming.BorderSizePixel = 0;
+Incoming.TextColor3 = Color3.fromRGB(255, 255, 255);
+Incoming.BackgroundColor3 = Color3.fromRGB(76, 76, 76);
+Incoming.AnchorPoint = Vector2.new(1, 0);
+Incoming.Size = UDim2.new(0.5, 0, 1, 0);
+Incoming.Text = "Incoming"
+Incoming.Position = UDim2.new(1, 0, 0, 0);
+
+local Divider = Instance.new("Frame", Modes);
+Divider.BorderSizePixel = 0;
+Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+Divider.AnchorPoint = Vector2.new(0, 1);
+Divider.Size = UDim2.new(0.5, 0, 0, 1);
+Divider.Position = UDim2.new(0, 0, 1, 0);
+Divider.Name = "Driver"
 
 --Toggle
-local ToggleButton = Create("ImageButton", {Parent = SimpleSpy3, Position = UDim2.new(0,100,0,60), Size = UDim2.new(0,40,0,40), BackgroundColor3 = Color3.fromRGB(53, 52, 55), Image = "rbxassetid://7072720870", Active = true, Draggable = true})
+local ToggleButton = Create("ImageButton", {
+    Name = "ToggleButton",
+    Parent = SimpleSpy3,
+    Position = UDim2.new(0,100,0,60),
+    Size = UDim2.new(0,40,0,40),
+    BackgroundColor3 = Color3.fromRGB(53, 52, 55),
+    Image = "rbxassetid://7072720870",
+    Active = true,
+    Draggable = true
+})
 ToggleButton.MouseButton1Down:Connect(function()
     ToggleButton.Image = (Background.Visible and "rbxassetid://7072720870") or "rbxassetid://7072719338"
     Background.Visible = not Background.Visible
@@ -363,6 +565,24 @@ MinimizeButton.MouseButton1Click:Connect(function()
     end
 end)
 
+Outcoming.MouseButton1Click:Connect(function()
+    Outcoming.BackgroundTransparency = 0.6
+    Incoming.BackgroundTransparency = 0
+    Divider.Position = UDim2.new(0, 0, 1, 0)
+    Divider.AnchorPoint = Vector2.new(0, 1)
+    LogList.Visible = true
+    LogList2.Visible = false
+end)
+
+Incoming.MouseButton1Click:Connect(function()
+    Outcoming.BackgroundTransparency = 0
+    Incoming.BackgroundTransparency = 0.6
+    Divider.Position = UDim2.new(1, 0, 1, 0)
+    Divider.AnchorPoint = Vector2.new(1, 0)
+    LogList.Visible = false
+    LogList2.Visible = true
+end)
+
 --- Runs on MouseButton1Click of an event frame
 function eventSelect(frame)
     if selected and selected.Log  then
@@ -496,8 +716,9 @@ function newRemote(type, data)
     if data.remote:IsA("BindableEvent") or data.remote:IsA("BindableFunction") then
         TextColor3 = Color3.fromRGB(255, 165, 0)
     end
+    local isIncoming = data.method == "OnClientEvent" or data.method == "OnClientInvoke"
 
-    local RemoteTemplate = Create("Frame",{LayoutOrder = layoutOrderNum,Name = "RemoteTemplate",Parent = LogList,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Size = UDim2.new(0, 117, 0, 27)})
+    local RemoteTemplate = Create("Frame",{LayoutOrder = layoutOrderNum,Name = "RemoteTemplate",Parent = isIncoming and LogList2 or LogList,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Size = UDim2.new(0, 117, 0, 27)})
     local ColorBar = Create("Frame",{Name = "ColorBar",Parent = RemoteTemplate,BackgroundColor3 = (type == "event" and Color3.fromRGB(255, 242, 0)) or Color3.fromRGB(99, 86, 245),BorderSizePixel = 0,Position = UDim2.new(0, 0, 0, 1),Size = UDim2.new(0, 7, 0, 18),ZIndex = 2})
     local Text = Create("TextLabel",{TextTruncate = Enum.TextTruncate.AtEnd,Name = "Text",Parent = RemoteTemplate,BackgroundColor3 = Color3.new(1, 1, 1),BackgroundTransparency = 1,Position = UDim2.new(0, 12, 0, 1),Size = UDim2.new(0, 105, 0, 18),ZIndex = 2,Font = Enum.Font.SourceSans,Text = remote.Name,TextColor3 = TextColor3,TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left})
     local Button = Create("TextButton",{Name = "Button",Parent = RemoteTemplate,BackgroundColor3 = Color3.new(0, 0, 0),BackgroundTransparency = 0.75,BorderColor3 = Color3.new(1, 1, 1),Position = UDim2.new(0, 0, 0, 1),Size = UDim2.new(0, 117, 0, 18),AutoButtonColor = false,Font = Enum.Font.SourceSans,Text = "",TextColor3 = Color3.new(0, 0, 0),TextSize = 14})
@@ -538,6 +759,7 @@ function newRemote(type, data)
     table.insert(remoteLogs, 1, {connect, RemoteTemplate})
     clean()
     LogList.CanvasSize = UDim2.fromOffset(UIListLayout.AbsoluteContentSize.X, UIListLayout.AbsoluteContentSize.Y)
+    LogList2.CanvasSize = UDim2.fromOffset(LogList2.UIListLayout.AbsoluteContentSize.X, LogList2.UIListLayout.AbsoluteContentSize.Y)
 end
 
 --- Generates a script from the provided arguments (first has to be remote path)
@@ -1047,6 +1269,7 @@ newButton(
     function()
         TextLabel.Text = "Clearing..."
         clear(logs)
+        local LogList = LogList.Visible and LogList or LogList2
         for i,v in next, LogList:GetChildren() do
             if not v:IsA("UIListLayout") then
                 v:Destroy()
