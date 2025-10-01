@@ -242,9 +242,6 @@ local codebox
 local history = {}
 local excluding = {}
 
--- if mouse inside gui
-local mouseInGui = false
-
 local connections = {}
 local DecompiledScripts = {}
 local originalNamecall = getrawmetatable(game).__namecall
@@ -353,49 +350,6 @@ Simple.MouseButton1Click:Connect(function()
     toggle = not toggle
 end)
 
---- Reconnects bringBackOnResize if the current viewport changes and also connects it initially
-function connectResize()
-    if not workspace.CurrentCamera then
-        workspace:GetPropertyChangedSignal("CurrentCamera"):Wait()
-    end
-    local lastCam = workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(bringBackOnResize)
-    workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
-        lastCam:Disconnect()
-        if typeof(lastCam) == 'Connection' then
-            lastCam:Disconnect()
-        end
-        lastCam = workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(bringBackOnResize)
-    end)
-end
-
---- Brings gui back if it gets lost offscreen (connected to the camera viewport changing)
-function bringBackOnResize()
-    validateSize()
-    if closed then
-        minimizeSize()
-    else
-        maximizeSize()
-    end
-    local currentX = Background.AbsolutePosition.X
-    local currentY = Background.AbsolutePosition.Y
-    local viewportSize = workspace.CurrentCamera.ViewportSize
-    if (currentX < 0) or (currentX > (viewportSize.X - (closed and 131 or Background.AbsoluteSize.X))) then
-        if currentX < 0 then
-            currentX = 0
-        else
-            currentX = viewportSize.X - (closed and 131 or Background.AbsoluteSize.X)
-        end
-    end
-    if (currentY < 0) or (currentY > (viewportSize.Y - (closed and 19 or Background.AbsoluteSize.Y) - GuiInset.Y)) then
-        if currentY < 0 then
-            currentY = 0
-        else
-            currentY = viewportSize.Y - (closed and 19 or Background.AbsoluteSize.Y) - GuiInset.Y
-        end
-    end
-    TweenService.Create(TweenService, Background, TweenInfo.new(0.1), {Position = UDim2.new(0, currentX, 0, currentY)}):Play()
-end
-
 MinimizeButton.MouseButton1Click:Connect(function()
     closed = not closed
     if closed then
@@ -408,140 +362,6 @@ MinimizeButton.MouseButton1Click:Connect(function()
         RightPanel.Visible = true
     end
 end)
-
---- Checks if cursor is within resize range
---- @param p Vector2
-function isInResizeRange(p)
-    local relativeP = p - Background.AbsolutePosition
-    local range = 5
-    if relativeP.X >= TopBar.AbsoluteSize.X - range and relativeP.Y >= Background.AbsoluteSize.Y - range
-        and relativeP.X <= TopBar.AbsoluteSize.X and relativeP.Y <= Background.AbsoluteSize.Y then
-        return true, 'B'
-    elseif relativeP.X >= TopBar.AbsoluteSize.X - range and relativeP.X <= Background.AbsoluteSize.X then
-        return true, 'X'
-    elseif relativeP.Y >= Background.AbsoluteSize.Y - range and relativeP.Y <= Background.AbsoluteSize.Y then
-        return true, 'Y'
-    end
-    return false
-end
-
---- Called when mouse enters SimpleSpy
-local customCursor = Create("ImageLabel",{Parent = SimpleSpy3,Visible = false,Size = UDim2.fromOffset(200, 200),ZIndex = 1e9,BackgroundTransparency = 1,Image = "",Parent = SimpleSpy3})
-function mouseEntered()
-    local con = connections["SIMPLESPY_CURSOR"]
-    if con then
-        con:Disconnect()
-        connections["SIMPLESPY_CURSOR"] = nil
-    end
-    connections["SIMPLESPY_CURSOR"] = RunService.RenderStepped:Connect(function()
-        customCursor.Visible = mouseInGui
-        if mouseInGui and getgenv().SimpleSpyExecuted then
-            local mouseLocation = UserInputService:GetMouseLocation() - GuiInset
-            customCursor.Position = UDim2.fromOffset(mouseLocation.X - customCursor.AbsoluteSize.X / 2, mouseLocation.Y - customCursor.AbsoluteSize.Y / 2)
-            local inRange, type = isInResizeRange(mouseLocation)
-            if inRange and not closed then
-                if not closed then
-                    customCursor.Image = type == 'B' and "rbxassetid://6065821980" or type == 'X' and "rbxassetid://6065821086" or type == 'Y' and "rbxassetid://6065821596"
-                elseif type == 'Y' or type == 'B' then
-                    customCursor.Image = "rbxassetid://6065821596"
-                end
-            else customCursor.Image = ""
-            end
-        else
-            connections["SIMPLESPY_CURSOR"]:Disconnect()
-        end
-    end)
-end
-
---- Adjusts the ui elements to the 'Maximized' size
-function maximizeSize(speed)
-    if not speed then
-        speed = 0.05
-    end
-    TweenService:Create(LeftPanel, TweenInfo.new(speed), { Size = UDim2.fromOffset(LeftPanel.AbsoluteSize.X, Background.AbsoluteSize.Y - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(RightPanel, TweenInfo.new(speed), { Size = UDim2.fromOffset(Background.AbsoluteSize.X - LeftPanel.AbsoluteSize.X, Background.AbsoluteSize.Y - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(TopBar, TweenInfo.new(speed), { Size = UDim2.fromOffset(Background.AbsoluteSize.X, TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(ScrollingFrame, TweenInfo.new(speed), { Size = UDim2.fromOffset(Background.AbsoluteSize.X - LeftPanel.AbsoluteSize.X, 110), Position = UDim2.fromOffset(0, Background.AbsoluteSize.Y - 119 - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(CodeBox, TweenInfo.new(speed), { Size = UDim2.fromOffset(Background.AbsoluteSize.X - LeftPanel.AbsoluteSize.X, Background.AbsoluteSize.Y - 119 - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(LogList, TweenInfo.new(speed), { Size = UDim2.fromOffset(LogList.AbsoluteSize.X, Background.AbsoluteSize.Y - TopBar.AbsoluteSize.Y - 18) }):Play()
-end
-
---- Adjusts the ui elements to close the side
-function minimizeSize(speed)
-    if not speed then
-        speed = 0.05
-    end
-    TweenService:Create(LeftPanel, TweenInfo.new(speed), { Size = UDim2.fromOffset(LeftPanel.AbsoluteSize.X, Background.AbsoluteSize.Y - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(RightPanel, TweenInfo.new(speed), { Size = UDim2.fromOffset(0, Background.AbsoluteSize.Y - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(TopBar, TweenInfo.new(speed), { Size = UDim2.fromOffset(LeftPanel.AbsoluteSize.X, TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(ScrollingFrame, TweenInfo.new(speed), { Size = UDim2.fromOffset(0, 119), Position = UDim2.fromOffset(0, Background.AbsoluteSize.Y - 119 - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(CodeBox, TweenInfo.new(speed), { Size = UDim2.fromOffset(0, Background.AbsoluteSize.Y - 119 - TopBar.AbsoluteSize.Y) }):Play()
-    TweenService:Create(LogList, TweenInfo.new(speed), { Size = UDim2.fromOffset(LogList.AbsoluteSize.X, Background.AbsoluteSize.Y - TopBar.AbsoluteSize.Y - 18) }):Play()
-end
-
---- Ensures size is within screensize limitations
-function validateSize()
-    local x, y = Background.AbsoluteSize.X, Background.AbsoluteSize.Y
-    local screenSize = workspace.CurrentCamera.ViewportSize
-    if x + Background.AbsolutePosition.X > screenSize.X then
-        if screenSize.X - Background.AbsolutePosition.X >= 450 then
-            x = screenSize.X - Background.AbsolutePosition.X
-        else
-            x = 450
-        end
-    elseif y + Background.AbsolutePosition.Y > screenSize.Y then
-        if screenSize.X - Background.AbsolutePosition.Y >= 268 then
-            y = screenSize.Y - Background.AbsolutePosition.Y
-        else
-            y = 268
-        end
-    end
-    Background.Size = UDim2.fromOffset(x, y)
-end
-
---- Called on user input while mouse in 'Background' frame
---- @param input InputObject
-function backgroundUserInput(input)
-    local mousePos = UserInputService:GetMouseLocation() - GuiInset
-    local inResizeRange, type = isInResizeRange(mousePos)
-    if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and inResizeRange then
-        local lastPos = UserInputService:GetMouseLocation()
-        local offset = Background.AbsoluteSize - lastPos
-        local currentPos = lastPos + offset
-        if not connections["SIMPLESPY_RESIZE"] then
-            connections["SIMPLESPY_RESIZE"] = RunService.RenderStepped:Connect(function()
-                local newPos = UserInputService:GetMouseLocation()
-                if newPos ~= lastPos then
-                    local currentX = (newPos + offset).X
-                    local currentY = (newPos + offset).Y
-                    if currentX < 450 then
-                        currentX = 450
-                    end
-                    if currentY < 268 then
-                        currentY = 268
-                    end
-                    currentPos = Vector2.new(currentX, currentY)
-                    Background.Size = UDim2.fromOffset((not closed and not closed and (type == "X" or type == "B")) and currentPos.X or Background.AbsoluteSize.X, (not closed and (type == "Y" or type == "B")) and currentPos.Y or Background.AbsoluteSize.Y)
-                    validateSize()
-                    if closed then
-                        minimizeSize()
-                    else
-                        maximizeSize()
-                    end
-                    lastPos = newPos
-                end
-            end)
-        end
-        table.insert(connections, UserInputService.InputEnded:Connect(function(inputE)
-            if input == inputE then
-                if connections["SIMPLESPY_RESIZE"] then
-                    connections["SIMPLESPY_RESIZE"]:Disconnect()
-                    connections["SIMPLESPY_RESIZE"] = nil
-                end
-            end
-        end))
-    end
-end
 
 --- Runs on MouseButton1Click of an event frame
 function eventSelect(frame)
@@ -1083,20 +903,10 @@ if not getgenv().SimpleSpyExecuted then
     codebox = Highlight.new(CodeBox)
     codebox:setRaw("SimpleSpy V3")
     getgenv().SimpleSpy = SimpleSpy
-    Background.MouseEnter:Connect(function(...)
-        mouseInGui = true
-        mouseEntered()
-    end)
-    Background.MouseLeave:Connect(function(...)
-        mouseInGui = false
-        mouseEntered()
-    end)
+    
     CloseButton.MouseButton1Click:Connect(shutdown)
-    table.insert(connections, UserInputService.InputBegan:Connect(backgroundUserInput))
-    connectResize()
     SimpleSpy3.Enabled = true
     schedulerconnect = RunService.Heartbeat:Connect(taskscheduler)
-    bringBackOnResize()
     SimpleSpy3.Parent = (gethui and gethui()) or CoreGui
     getgenv().SimpleSpyExecuted = true
 else
