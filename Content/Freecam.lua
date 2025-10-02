@@ -522,6 +522,7 @@ thumbstick= {
 end
 
 local v_u_168 = nil
+local gui = ({...})[1]
 local function v188()
 	-- upvalues: (copy) v_u_2, (ref) v_u_168, (copy) v_u_164, (ref) v_u_157, (copy) v_u_165
 	local v_u_169 = nil
@@ -530,7 +531,7 @@ local function v188()
 	local v_u_172 = v_u_2.Advanced.FovWheelSpeed * 3 / 4
 	local v_u_173 = nil
 	local v_u_174 = tick() - 0.1
-	v_u_168 = thumbstick:Create(({...})[1], v_u_2.ThumbstickVisibleForMobile, function(p175, p176)
+	v_u_168 = thumbstick:Create(gui, v_u_2.ThumbstickVisibleForMobile, function(p175, p176)
 		globalKp(nil, p176 and Enum.UserInputState.Begin or Enum.UserInputState.End, {
 			["KeyCode"] = p175
 		})
