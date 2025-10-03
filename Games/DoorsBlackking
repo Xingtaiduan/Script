@@ -1,15 +1,1 @@
-local MessageBox = loadstring(game:HttpGet("https://pastebin.com/raw/6uBnwKW9"))()
-MessageBox({
-    Position = UDim2.new(0.5,0,0.5,0),
-    Text = "提示",
-    Description = "由于原脚本作者添加了卡密系统，建议您使用XA Hub",
-    MessageBoxIcon = "Warning",
-    MessageBoxButtons = "OK",
-    Result = function(text)
-        if text == "OK" then
-            task.spawn(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/Games/Doors.lua"))()
-            end)
-        end
-    end
-})
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/Games/Doors.lua"))()
