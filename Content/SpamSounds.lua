@@ -120,7 +120,7 @@ Path.BackgroundTransparency = 1.000
 Path.Position = UDim2.new(0.00684931502, 0, 0.815126061, 0)
 Path.Size = UDim2.new(0, 435, 0, 44)
 Path.Font = Enum.Font.GothamSemibold
-Path.Text = "开发说明:此脚本是FE,X脚本提供汉化"
+Path.Text = "开发说明:此脚本是FE,XA脚本提供汉化"
 Path.TextColor3 = Color3.fromRGB(255, 0, 0)
 Path.TextScaled = true
 Path.TextSize = 14.000
@@ -295,16 +295,8 @@ end)
 Stop.MouseButton1Click:Connect(function()
 	Active = false
 end)
---Credit:
-notification:Play()
 
-game:GetService("StarterGui"):SetCore("SendNotification", {
-	Title = "提示";
-	Text = "由XA提供翻译";
-	Icon = "";
-	Duration = 10; 
-	Button1 = "好的";
-})
+notification:Play()
 
 --Check:
 while true do
@@ -318,3 +310,4 @@ while true do
 		Time.TextColor = BrickColor.new(0,255,0)
 	end
 end
+
