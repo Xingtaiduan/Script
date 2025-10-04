@@ -15,15 +15,15 @@ local LP = game:GetService("Players").LocalPlayer
 
 local Camera = workspace.CurrentCamera
 workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
-	local v20 = workspace.CurrentCamera
-	if v20 then
-		Camera = v20
+	local newCamera = workspace.CurrentCamera
+	if newCamera then
+		Camera = newCamera
 	end
 end)
 
 local INPUT_PRIORITY = Enum.ContextActionPriority.High.Value
-local v24 = UserInputService.TouchEnabled and 4 or 1
-local v25 = UserInputService.TouchEnabled and 2 or 4
+local PAN_STIFFNESS = UserInputService.TouchEnabled and 4 or 1
+local FOV_STIFFNESS = UserInputService.TouchEnabled and 2 or 4
 
 local Spring = {} do
 	Spring.__index = Spring
@@ -62,99 +62,117 @@ end
 local cameraPos = Vector3.new()
 local cameraRot = Vector2.new()
 local cameraFov = 0
+
 local velSpring = Spring.new(1.5, (Vector3.new()))
-local panSpring = Spring.new(v24, Vector2.new())
-local fovSpring = Spring.new(v25, 0)
-local Input = {}
-local keyboard = {
-	["W"] = 0,
-	["A"] = 0,
-	["S"] = 0,
-	["D"] = 0,
-	["E"] = 0,
-	["Q"] = 0,
-	["U"] = 0,
-	["H"] = 0,
-	["J"] = 0,
-	["K"] = 0,
-	["I"] = 0,
-	["Y"] = 0,
-	["Up"] = 0,
-	["Down"] = 0,
-	["LeftShift"] = 0,
-	["RightShift"] = 0
-}
-local mouse = {
-	["Delta"] = Vector2.new(),
-	["MouseWheel"] = 0
-}
-local PAN_MOUSE_SPEED = Vector2.new(1, 1) * math.pi/64
-local NAV_KEYBOARD_SPEED = Vector3.new(1, 1, 1)
-local navSpeed = 1
+local panSpring = Spring.new(PAN_STIFFNESS, Vector2.new())
+local fovSpring = Spring.new(FOV_STIFFNESS, 0)
 
-function Input.Vel(p66)
-	navSpeed = math.clamp(navSpeed + p66 * (keyboard.Up - keyboard.Down) * Settings.UpDownSpeed, 0.01, 4)
+local Input = {} do
+    local keyboard = {
+	    W = 0,
+	    A = 0,
+	    S = 0,
+	    D = 0,
+	    E = 0,
+	    Q = 0,
+	    U = 0,
+	    H = 0,
+	    J = 0,
+	    K = 0,
+	    I = 0,
+	    Y = 0,
+	    Up = 0,
+	    Down = 0,
+	    LeftShift = 0,
+	    RightShift = 0
+    }
+    
+    local mouse = {
+	    Delta = Vector2.new(),
+	    MouseWheel = 0
+    }
+    
+    local PAN_MOUSE_SPEED = Vector2.new(1, 1) * math.pi/64
+    local NAV_KEYBOARD_SPEED = Vector3.new(1, 1, 1)
+    local navSpeed = 1
+
+    function Input.Vel(dt)
+	    navSpeed = math.clamp(navSpeed + dt * (keyboard.Up - keyboard.Down) * Settings.UpDownSpeed, 0.01, 4)
 	
-	local kKeyboard = Vector3.new(
-		keyboard.D - keyboard.A + keyboard.K - keyboard.H,
-		keyboard.E - keyboard.Q + keyboard.I - keyboard.Y,
-		keyboard.S - keyboard.W + keyboard.J - keyboard.U
-	)*NAV_KEYBOARD_SPEED
+	    local kKeyboard = Vector3.new(
+		    keyboard.D - keyboard.A + keyboard.K - keyboard.H,
+		    keyboard.E - keyboard.Q + keyboard.I - keyboard.Y,
+		    keyboard.S - keyboard.W + keyboard.J - keyboard.U
+	    )*NAV_KEYBOARD_SPEED
 	
-	local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+	    local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
 	
-	return kKeyboard * (navSpeed * (shift and Settings.ShiftSpeed or (UserInputService.TouchEnabled and Settings.MobileSpeed or 1)))
-end
+	    return kKeyboard * (navSpeed * (shift and Settings.ShiftSpeed or (UserInputService.TouchEnabled and Settings.MobileSpeed or 1)))
+    end
 
-function Input.Pan(dt)
-	local kMouse = mouse.Delta * PAN_MOUSE_SPEED
-	mouse.Delta = Vector2.new()
-	return kMouse
-end
+    function Input.Pan(dt)
+	    local kMouse = mouse.Delta * PAN_MOUSE_SPEED
+	    mouse.Delta = Vector2.new()
+	    return kMouse
+    end
 
-function Input.Fov(dt)
-	local v80 = mouse.MouseWheel * Settings.FovWheelSpeed
-	mouse.MouseWheel = 0
-	return v80
-end
+    function Input.Fov(dt)
+	    local kMouse = mouse.MouseWheel * Settings.FovWheelSpeed
+	    mouse.MouseWheel = 0
+	    return kMouse
+    end
 
-local function Keypress(_, state, input)
-	keyboard[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
-	return Enum.ContextActionResult.Sink
-end
+    local function Keypress(_, state, input)
+	    keyboard[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
+	    return Enum.ContextActionResult.Sink
+    end
 
-local function MousePan(_, _, input)
-	local delta = input.Delta
-	mouse.Delta = Vector2.new(-delta.y, -delta.x)
-	return Enum.ContextActionResult.Sink
-end
+    local function MousePan(_, _, input)
+	    local delta = input.Delta
+	    mouse.Delta = Vector2.new(-delta.y, -delta.x)
+	    return Enum.ContextActionResult.Sink
+    end
 
-globalMouse = mouse
-globalKp = Keypress
-local function MouseWheel(_, _, input)
-	mouse[input.UserInputType.Name] = -input.Position.z
-	return Enum.ContextActionResult.Sink
-end
-
-function Input.StartCapture()
-	ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY, Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D, Enum.KeyCode.U, Enum.KeyCode.H, Enum.KeyCode.J, Enum.KeyCode.K, Enum.KeyCode.E, Enum.KeyCode.I, Enum.KeyCode.Q, Enum.KeyCode.Y, Enum.KeyCode.Up, Enum.KeyCode.Down)
-	
-	ContextActionService:BindActionAtPriority("FreecamMousePan", MousePan, false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
-	
-	ContextActionService:BindActionAtPriority("FreecamMouseWheel", MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
-end
-
-function Input.StopCapture()
-	navSpeed = 1
-	for i, v in pairs(keyboard) do
-		keyboard[i] = v * 0
+    globalMouse = mouse
+    globalKp = Keypress
+    
+    local function MouseWheel(_, _, input)
+	    mouse[input.UserInputType.Name] = -input.Position.z
+	    return Enum.ContextActionResult.Sink
+    end
+    
+    local function Zero(t)
+		for k, v in pairs(t) do
+			t[k] = v*0
+		end
 	end
-	for i, v in pairs(mouse) do
-		mouse[i] = v * 0
-	end
-	ContextActionService:UnbindAction("FreecamKeyboard")
-	ContextActionService:UnbindAction("FreecamMousePan")
-	ContextActionService:UnbindAction("FreecamMouseWheel")
+
+    function Input.StartCapture()
+	    ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY,
+	        Enum.KeyCode.W, Enum.KeyCode.U,
+	        Enum.KeyCode.A, Enum.KeyCode.H,
+	        Enum.KeyCode.S, Enum.KeyCode.J,
+	        Enum.KeyCode.D, Enum.KeyCode.K,
+	        Enum.KeyCode.E, Enum.KeyCode.I,
+	        Enum.KeyCode.Q, Enum.KeyCode.Y,
+	        Enum.KeyCode.Up, Enum.KeyCode.Down
+	    )
+	    ContextActionService:BindActionAtPriority("FreecamMousePan", MousePan, false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
+	    ContextActionService:BindActionAtPriority("FreecamMouseWheel", MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
+    end
+
+    function Input.StopCapture()
+	    navSpeed = 1
+	    for i, v in pairs(keyboard) do
+		    keyboard[i] = v * 0
+	    end
+	    for i, v in pairs(mouse) do
+		    mouse[i] = v * 0
+	    end
+	    ContextActionService:UnbindAction("FreecamKeyboard")
+	    ContextActionService:UnbindAction("FreecamMousePan")
+	    ContextActionService:UnbindAction("FreecamMouseWheel")
+    end
 end
 
 local function GetFocusDistance(cameraFrame)
@@ -213,6 +231,7 @@ local PlayerState = {} do
     local cameraType = nil
     local mouseIconEnabled = nil
     local cameraFieldOfView = nil
+    
     function PlayerState.Push()
 	    cameraFieldOfView = Camera.FieldOfView
 	    Camera.FieldOfView = 70
@@ -256,9 +275,11 @@ local function StartFreecam()
 	cameraRot = Vector2.new(cameraCFrame:toEulerAnglesYXZ())
 	cameraPos = cameraCFrame.p
 	cameraFov = Camera.FieldOfView
+	
 	velSpring:Reset((Vector3.new()))
 	panSpring:Reset(Vector2.new())
 	fovSpring:Reset(0)
+	
 	PlayerState.Push()
 	RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
 	Input.StartCapture()
@@ -397,6 +418,7 @@ local thumbstick = {
 
 local active = false
 local thumbstickFrame = nil
+local ScreenGui = ({...})[1]
 local function initTouchControl()
 	local lastPinchScale = nil
 	local currentZoom = 15
@@ -404,7 +426,8 @@ local function initTouchControl()
 	local zoomStep = Settings.FovWheelSpeed * 3 / 4
 	local isThumbstickActive = nil
 	local lastThumbstickTime = tick() - 0.1
-	thumbstickFrame = thumbstick:Create(({...})[1], function(keycode, isPressed)
+	
+	thumbstickFrame = thumbstick:Create(ScreenGui, function(keycode, isPressed)
 		globalKp(nil, isPressed and Enum.UserInputState.Begin or Enum.UserInputState.End, {
 			["KeyCode"] = keycode
 		})
@@ -424,6 +447,7 @@ local function initTouchControl()
 		isThumbstickActive = isTouching
 		lastThumbstickTime = tick()
 	end)
+	
 	UserInputService.TouchPinch:Connect(function(_, scale, _, state)
 		if (state == Enum.UserInputState.Change or state == Enum.UserInputState.End) and (active and (not isThumbstickActive and tick() - lastThumbstickTime > 0.1)) then
 			currentZoom = currentZoom * (1 + (scale - lastPinchScale))
