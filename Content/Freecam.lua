@@ -460,17 +460,33 @@ local function initTouchControl()
 		lastPinchScale = scale
 	end)
 	
-	local lastPanPos = nil
-	UserInputService.TouchPan:Connect(function(touches, panPos, _, state)
-		if state == Enum.UserInputState.Change or state == Enum.UserInputState.End then
-		    local pos = touches[1]
-		    if active and pos.X > Camera.ViewportSize.X/2 then
-			    local delta = panPos - lastPanPos
-			    globalMouse.Delta = Vector2.new(-delta.Y, -delta.X)
-			end
-		end
-		lastPanPos = panPos
-	end)
+	local activeTouchInput = nil
+    local lastPos = nil
+    UserInputService.TouchStarted:Connect(function(input, processed)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            local pos = input.Position
+            local screenWidth = Camera.ViewportSize.X
+            if pos.X > screenWidth / 2 then
+                activeTouchInput = input
+                lastPos = pos
+            end
+        end
+    end)
+
+    UserInputService.TouchMoved:Connect(function(input, processed)
+        if input == activeTouchInput and lastPos then
+            local delta = input.Position - lastPos
+			globalMouse.Delta = Vector2.new(-delta.Y, -delta.X)
+            lastPos = input.Position
+        end
+    end)
+
+    UserInputService.TouchEnded:Connect(function(input, processed)
+        if input == activeTouchInput then
+            activeTouchInput = nil
+            lastPos = nil
+        end
+    end)
 end
 
 local minZoomDistance = 0
