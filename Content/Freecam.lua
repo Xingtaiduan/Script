@@ -11,7 +11,11 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-local LP = game:GetService("Players").LocalPlayer
+local LocalPlayer = Players.LocalPlayer
+if not LocalPlayer then
+	Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+	LocalPlayer = Players.LocalPlayer
+end
 
 local Camera = workspace.CurrentCamera
 workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
@@ -163,12 +167,8 @@ local Input = {} do
 
     function Input.StopCapture()
 	    navSpeed = 1
-	    for i, v in pairs(keyboard) do
-		    keyboard[i] = v * 0
-	    end
-	    for i, v in pairs(mouse) do
-		    mouse[i] = v * 0
-	    end
+	    Zero(keyboard)
+		Zero(mouse)
 	    ContextActionService:UnbindAction("FreecamKeyboard")
 	    ContextActionService:UnbindAction("FreecamMousePan")
 	    ContextActionService:UnbindAction("FreecamMouseWheel")
@@ -203,7 +203,6 @@ local function GetFocusDistance(cameraFrame)
 
 	return fz:Dot(minVect) * minDist
 end
-
 
 local function StepFreecam(dt)
 	local vel = velSpring:Update(dt, Input.Vel(dt))
@@ -452,8 +451,8 @@ local function initTouchControl()
 		if (state == Enum.UserInputState.Change or state == Enum.UserInputState.End) and (active and (not isThumbstickActive and tick() - lastThumbstickTime > 0.1)) then
 			currentZoom = currentZoom * (1 + (scale - lastPinchScale))
 			currentZoom = math.max(currentZoom, 0)
-			LP.CameraMinZoomDistance = 5
-			LP.CameraMaxZoomDistance = 5
+			LocalPlayer.CameraMinZoomDistance = 5
+			LocalPlayer.CameraMaxZoomDistance = 5
 			local zoomDelta = currentZoom - lastZoom < 1 and zoomStep or -zoomStep
 			globalMouse.MouseWheel = zoomDelta
 			lastZoom = currentZoom
@@ -462,9 +461,10 @@ local function initTouchControl()
 	end)
 	
 	local lastPanPos = nil
-	UserInputService.TouchPan:Connect(function(_, panPos, _, state)
+	UserInputService.TouchPan:Connect(function(touches, panPos, _, state)
 		if state == Enum.UserInputState.Change or state == Enum.UserInputState.End then
-		    if active and not isThumbstickActive then
+		    local pos = touches[1]
+		    if active and pos.X > Camera.ViewportSize.X/2 then
 			    local delta = panPos - lastPanPos
 			    globalMouse.Delta = Vector2.new(-delta.Y, -delta.X)
 			end
@@ -480,8 +480,8 @@ local function enable()
     active = true
 	StartFreecam()
 	
-	minZoomDistance = LP.CameraMinZoomDistance
-	maxZoomDistance = LP.CameraMaxZoomDistance
+	minZoomDistance = LocalPlayer.CameraMinZoomDistance
+	maxZoomDistance = LocalPlayer.CameraMaxZoomDistance
 	
 	if thumbstickFrame then
 		thumbstickFrame.Visible = true
@@ -494,8 +494,8 @@ local function disable()
 	RunService:UnbindFromRenderStep("Freecam")
 	PlayerState.Pop()
 	
-	LP.CameraMinZoomDistance = minZoomDistance
-	LP.CameraMaxZoomDistance = maxZoomDistance
+	LocalPlayer.CameraMinZoomDistance = minZoomDistance
+	LocalPlayer.CameraMaxZoomDistance = maxZoomDistance
 	
 	if thumbstickFrame then
 		thumbstickFrame.Visible = false
