@@ -25,7 +25,7 @@ local service = setmetatable({}, {
 -- so we gotta use vanilla game
 local oldgame = game
 local game = workspace.Parent
-local mouse = Main.Mouse or service.Players.LocalPlayer:GetMouse()
+local mouse = cloneref(service.Players.LocalPlayer:GetMouse())
 
 local EmbeddedModules = {
 	Explorer = function()
