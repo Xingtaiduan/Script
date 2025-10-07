@@ -6679,7 +6679,6 @@ local EmbeddedModules = {
 
 			Lib.ContextMenu = (function()
 				local funcs = {}
-				local mouse
 
 				local function createGui(self)
 					local contextGui = create({
