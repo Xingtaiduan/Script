@@ -25,6 +25,7 @@ local service = setmetatable({}, {
 -- so we gotta use vanilla game
 local oldgame = game
 local game = workspace.Parent
+local mouse = Main.Mouse or service.Players.LocalPlayer:GetMouse()
 
 local EmbeddedModules = {
 	Explorer = function()
@@ -503,7 +504,6 @@ local EmbeddedModules = {
 				})
 				dragOutline.Parent = treeFrame
 
-				local mouse = Main.Mouse or service.Players.LocalPlayer:GetMouse()
 				local function move()
 					local posX = mouse.X - offX
 					local posY = mouse.Y - offY
@@ -593,7 +593,6 @@ local EmbeddedModules = {
 					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 						local releaseEvent, mouseEvent
 
-						local mouse = Main.Mouse or plr:GetMouse()
 						local startX, startY
 
 						if input.UserInputType == Enum.UserInputType.Touch then
@@ -1343,7 +1342,6 @@ local EmbeddedModules = {
 				end})
 
 				context:Register("INSERT_OBJECT",{Name = "Insert Object", IconMap = Explorer.MiscIcons, Icon = "InsertObject", OnClick = function()
-					local mouse = Main.Mouse
 					local x,y = Explorer.LastRightClickX or mouse.X, Explorer.LastRightClickY or mouse.Y
 					Explorer.InsertObjectContext:Show(x,y)
 				end})
@@ -4483,7 +4481,6 @@ local EmbeddedModules = {
 
 			Lib.CheckMouseInGui = function(gui)
 				if gui == nil then return false end
-				local mouse = Main.Mouse
 				local guiPosition = gui.AbsolutePosition
 				local guiSize = gui.AbsoluteSize	
 
@@ -5311,7 +5308,6 @@ local EmbeddedModules = {
 			Lib.ScrollBar = (function()
 				local funcs = {}
 				local user = service.UserInputService
-				local mouse = plr:GetMouse()
 				local checkMouseInGui = Lib.CheckMouseInGui
 				local createArrow = Lib.CreateArrow
 
@@ -5720,7 +5716,6 @@ local EmbeddedModules = {
 			Lib.Window = (function()
 				local funcs = {}
 				local static = {MinWidth = 200, FreeWidth = 200}
-				local mouse = plr:GetMouse()
 				local sidesGui, alignIndicator
 				local visibleWindows = {}
 				local leftSide = {Width = 300, Windows = {}, ResizeCons = {}, Hidden = true}
@@ -6098,7 +6093,6 @@ local EmbeddedModules = {
 				end
 
 				local function sideResizerHook(resizer,dir,side,pos)
-					local mouse = Main.Mouse
 					local windows = side.Windows
 
 					resizer.InputBegan:Connect(function(input)
@@ -7010,7 +7004,6 @@ local EmbeddedModules = {
 
 				local mt = {__index = funcs}
 				local function new()
-					if not mouse then mouse = Main.Mouse or service.Players.LocalPlayer:GetMouse() end
 
 					local obj = setmetatable({
 						Width = 200,
@@ -7239,7 +7232,6 @@ local EmbeddedModules = {
 				end
 
 				local function setupMouseSelection(obj)
-					local mouse = plr:GetMouse()
 					local codeFrame = obj.GuiElems.LinesFrame
 					local lines = obj.Lines
 
@@ -8588,7 +8580,6 @@ local EmbeddedModules = {
 			Lib.BrickColorPicker = (function()
 				local funcs = {}
 				local paletteCount = 0
-				local mouse = service.Players.LocalPlayer:GetMouse()
 				local hexStartX = 4
 				local hexSizeX = 27
 				local hexTriangleStart = 1
@@ -8902,7 +8893,6 @@ local EmbeddedModules = {
 					local blueInput = pickerFrame.Blue.Input
 
 					local user = service.UserInputService
-					local mouse = service.Players.LocalPlayer:GetMouse()
 
 					local hue,sat,val = 0,0,1
 					local red,green,blue = 1,1,1
@@ -9254,7 +9244,6 @@ local EmbeddedModules = {
 					local resetSequence = nil
 
 					local user = service.UserInputService
-					local mouse = service.Players.LocalPlayer:GetMouse()
 
 					for i = 2,10 do
 						local newLine = Instance.new("Frame")
@@ -9750,7 +9739,6 @@ local EmbeddedModules = {
 					local topClose = pickerTopBar.Close
 
 					local user = service.UserInputService
-					local mouse = service.Players.LocalPlayer:GetMouse()
 
 					local colors = {{Color3.new(1,0,1),0},{Color3.new(0.2,0.9,0.2),0.2},{Color3.new(0.4,0.5,0.9),0.7},{Color3.new(0.6,1,1),1}}
 					local resetSequence = nil
@@ -10557,7 +10545,7 @@ Main = (function()
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "" -- Beta 1.0.0
-	Main.Mouse = plr:GetMouse()
+	Main.Mouse = mouse
 	Main.AppControls = {}
 	Main.Apps = Apps
 	Main.MenuApps = {}
@@ -11365,7 +11353,6 @@ Main = (function()
 		local cptsOnMouseClick = nil
 		Main.CreateApp({Name = "Click part to select", IconMap = Main.LargeIcons, Icon = 6, OnClick = function(callback)
 			if callback then
-				local mouse = Main.Mouse
 				cptsOnMouseClick = mouse.Button1Down:Connect(function()
 					pcall(function()
 						local object = mouse.Target
