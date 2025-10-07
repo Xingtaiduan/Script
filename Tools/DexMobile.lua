@@ -19,6 +19,7 @@ local service = setmetatable({}, {
 	end
 })
 
+--local gethui = function() return game.Players.LocalPlayer.PlayerGui end
 -- prevent environment implosion from references
 -- mainly from the executor not having some game properties in their game variable
 -- so we gotta use vanilla game
