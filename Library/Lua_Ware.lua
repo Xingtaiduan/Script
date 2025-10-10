@@ -713,7 +713,8 @@ function Library.new(Library, name)
                         end
                         wait()
                         bindKey = Enum.KeyCode[keyName]
-                        KeybindValue.Text = shortNames[keyName] or keyName
+                        keyTxt = shortNames[keyName] or keyName
+                        KeybindValue.Text = keyTxt
                     end
                 )
 
