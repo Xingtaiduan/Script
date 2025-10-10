@@ -242,8 +242,9 @@ function Library.new(Library, name)
     Open.Draggable = true
     Open.MouseButton1Click:Connect(ToggleUILib)
     
+    Library.ToggleKeybind = Enum.KeyCode.LeftControl
     UserInputService.InputBegan:Connect(function(input)
-        if input.KeyCode == Enum.KeyCode.LeftControl then
+        if input.KeyCode == Library.ToggleKeybind then
             ToggleUILib()
         end
     end)
