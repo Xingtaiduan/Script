@@ -1458,9 +1458,9 @@ function()
 end)
 
 newButton("Log Bindable",function()
-    return ("[%s] Log Bindable"):format(configs.loginvokeclient and "ENABLED" or "DISABLED")
+    return ("[%s] Log Bindable"):format(configs.logbindable and "ENABLED" or "DISABLED")
 end,
 function()
     configs.logbindable = not configs.logbindable
-    TextLabel.Text = ("[%s] Log Bindable"):format(configs.loginvokeclient and "ENABLED" or "DISABLED")
+    TextLabel.Text = ("[%s] Log Bindable"):format(configs.logbindable and "ENABLED" or "DISABLED")
 end)
