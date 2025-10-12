@@ -18,7 +18,8 @@ local realconfigs = {
     advancedinfo = false,
     logreturnvalues = false,
     logfireclient = false,
-    loginvokeclient = false
+    loginvokeclient = false,
+    logbindable = false
 }
 
 local configs = newproxy(true)
@@ -715,6 +716,7 @@ function newRemote(type, data)
     local TextColor3 = Color3.new(1, 1, 1)
     if data.remote:IsA("BindableEvent") or data.remote:IsA("BindableFunction") then
         TextColor3 = Color3.fromRGB(255, 165, 0)
+        if not configs.logbindable then return end
     end
     local isIncoming = data.method == "OnClientEvent" or data.method == "OnClientInvoke"
 
@@ -1050,6 +1052,13 @@ local function receiveRemote(v)
             end
             hooks[#hooks+1] = function()
                 v.OnClientInvoke = callback
+            end
+        else
+            v.OnClientInvoke = function(...)
+                if configs.loginvokeclient then
+                    return newindex("OnClientInvoke", callback, v, ...)
+                end
+                return nil
             end
         end
     end
@@ -1446,4 +1455,12 @@ end,
 function()
     configs.loginvokeclient = not configs.loginvokeclient
     TextLabel.Text = ("[%s] Log Server InvokeClient"):format(configs.loginvokeclient and "ENABLED" or "DISABLED")
+end)
+
+newButton("Log Bindable",function()
+    return ("[%s] Log Bindable"):format(configs.loginvokeclient and "ENABLED" or "DISABLED")
+end,
+function()
+    configs.logbindable = not configs.logbindable
+    TextLabel.Text = ("[%s] Log Bindable"):format(configs.loginvokeclient and "ENABLED" or "DISABLED")
 end)
