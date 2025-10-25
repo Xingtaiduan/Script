@@ -338,6 +338,7 @@ local function getUniqueName(tbl, baseName)
 	tbl[name] = true
 	return name
 end
+
 -- Load descendants and order them in a flatted tree array, in order to provide a y(x) convertion
 local function LoadDescendants(Res:ConvertionRes, Inst:Instance, Parent:RegInstance) : nil
 	-- register instance
@@ -362,70 +363,81 @@ local function LoadDescendants(Res:ConvertionRes, Inst:Instance, Parent:RegInsta
 end;
 
 local round = math.round
+local function PrettifyNumber(number: number): number
+    return math_round(number * 100000) / 100000
+end
+
 -- transpile property to lua
 local function TranspileValue(RawValue:any)
-	local Value = '';
-	local Type = typeof(RawValue);
-	if Type == 'string' then
-		Value = EncapsulateString(RawValue);
-	elseif Type == 'number' or Type == 'boolean' or Type:match('^Enum') then
-		Value = tostring(RawValue);
-		-- %.3f format might be better
-	elseif Type == 'Vector2' then
-		Value = ('Vector2.new(%s, %s)'):format(
-		RawValue.X, RawValue.Y
-		);
-	elseif Type == 'Vector3' then
-		Value = ('Vector3.new(%s, %s, %s)'):format(
-		RawValue.X, RawValue.Y, RawValue.Z
-		);
-	elseif Type == 'UDim2' then
-        Value = ('UDim2.new(%s, %s, %s, %s)'):format(
-            round(RawValue.X.Scale * 100000) / 100000,
-            round(RawValue.X.Offset * 100000) / 100000,
-            round(RawValue.Y.Scale * 100000) / 100000,
-            round(RawValue.Y.Offset * 100000) / 100000
+    local Value = '';
+    local Type = typeof(RawValue);
+    if Type == 'string' then
+        Value = EncapsulateString(RawValue);
+    elseif Type == 'boolean' or Type:match('^Enum') then
+        Value = tostring(RawValue);
+    -- %.3f format might be better
+    elseif Type == 'number' then
+		Value = PrettifyNumber(RawValue)
+    elseif Type == 'Vector2' then
+        Value = ('Vector2.new(%s, %s)'):format(
+            PrettifyNumber(RawValue.X), PrettifyNumber(RawValue.Y)
         );
-	elseif Type == 'UDim' then
-		Value = ('UDim.new(%s, %s)'):format(
-		RawValue.Scale, RawValue.Offset
+    elseif Type == 'Vector3' then
+        Value = ('Vector3.new(%s, %s, %s)'):format(
+            PrettifyNumber(RawValue.X), PrettifyNumber(RawValue.Y), PrettifyNumber(RawValue.Z)
+        );
+    elseif Type == 'UDim2' then
+        Value = ('UDim2.new(%s, %s, %s, %s)'):format(
+            PrettifyNumber(RawValue.X.Scale), PrettifyNumber(RawValue.X.Offset),
+            PrettifyNumber(RawValue.Y.Scale), PrettifyNumber(RawValue.Y.Offset)
+        );
+    elseif Type == 'UDim' then
+        Value = ('UDim.new(%s, %s)'):format(
+            PrettifyNumber(RawValue.Scale), PrettifyNumber(RawValue.Offset)
+        );
+    elseif Type == 'Rect' then
+        Value = ('Rect.new(%s, %s, %s, %s)'):format(
+            PrettifyNumber(RawValue.Min.X), PrettifyNumber(RawValue.Min.Y),
+            PrettifyNumber(RawValue.Max.X), PrettifyNumber(RawValue.Max.Y)
+        );
+    elseif Type == "Font" then
+        Value = ('Font.new(%s, %s, %s)'):format(
+			EncapsulateString(RawValue.Family), tostring(RawValue.Weight), tostring(RawValue.Style)
 		);
-	elseif Type == 'Rect' then
-		Value = ('Rect.new(%s, %s, %s, %s)'):format(
-		RawValue.Min.X, RawValue.Min.Y,
-		RawValue.Max.X, RawValue.Max.Y
-		);
-	elseif Type == "Font" then
-		Value = ('Font.new(%s, %s, %s)'):format(
-		EncapsulateString(RawValue.Family), tostring(RawValue.Weight), tostring(RawValue.Style)
-		);
-	elseif Type == 'Color3' then
-		-- convert rgb float value to decimal
-		local R, G, B = math.ceil(RawValue.R * 255), math.ceil(RawValue.G * 255), math.ceil(RawValue.B * 255);
-		Value = ('Color3.fromRGB(%s, %s, %s)'):format(
-		R, G, B
-		);
-	elseif Type == "ColorSequence" then
-		local Keypoints = '';
-		for Idx, KeyPoint:ColorSequenceKeypoint in next, RawValue.Keypoints do
-			Keypoints = Keypoints .. ('ColorSequenceKeypoint.new(%.3f, %s),'):format(
-			KeyPoint.Time, TranspileValue(KeyPoint.Value)
-			);
-		end;
-		-- remove last comma
-		Keypoints = Keypoints:sub(1, -2);
-		Value = ('ColorSequence.new{%s}'):format(Keypoints);
+    elseif Type == 'Color3' then
+        -- convert rgb float value to decimal
+        local R, G, B = math.ceil(RawValue.R * 255), math.ceil(RawValue.G * 255), math.ceil(RawValue.B * 255);
+        Value = ('Color3.fromRGB(%s, %s, %s)'):format(
+            R, G, B
+        );
+    elseif Type == "ColorSequence" then
+        local Keypoints = '';
+        for Idx, KeyPoint:ColorSequenceKeypoint in next, RawValue.Keypoints do
+            Keypoints = Keypoints .. ('ColorSequenceKeypoint.new(%.3f, %s),'):format(
+                KeyPoint.Time, TranspileValue(KeyPoint.Value)
+            );
+        end;
+        -- remove last comma
+        Keypoints = Keypoints:sub(1, -2);
+        Value = ('ColorSequence.new{%s}'):format(Keypoints);
 	elseif Type == "NumberSequence" then
 		local Keypoints = '';
 		for Idx, KeyPoint:NumberSequenceKeypoint in next, RawValue.Keypoints do
 			Keypoints = Keypoints .. ('NumberSequenceKeypoint.new(%.3f, %s),'):format(
-			KeyPoint.Time, TranspileValue(KeyPoint.Value)
+				KeyPoint.Time, TranspileValue(KeyPoint.Value)
 			);
 		end;
 		Keypoints = Keypoints:sub(1, -2);
 		Value = ('NumberSequence.new{%s}'):format(Keypoints);
+	elseif Type == "CFrame" then
+		local Position = RawValue.Position;
+		local LookVector = RawValue.LookVector;
+		Value = ('CFrame.new(Vector3.new(%s, %s, %s), Vector3.new(%s, %s, %s))'):format(
+			PrettifyNumber(Position.X), PrettifyNumber(Position.Y), PrettifyNumber(Position.Z),
+			PrettifyNumber(LookVector.X), PrettifyNumber(LookVector.Y), PrettifyNumber(LookVector.Z)
+		)
 	end
-	return Value;
+    return Value;
 end
 
 local function TranspileProperties(Res:ConvertionRes, Inst:RegInstance) : string
