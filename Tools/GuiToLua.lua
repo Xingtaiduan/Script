@@ -362,7 +362,7 @@ local function LoadDescendants(Res:ConvertionRes, Inst:Instance, Parent:RegInsta
 	end;
 end;
 
-local round = math.round
+local math_round = math.round
 local function PrettifyNumber(number: number): number
     return math_round(number * 100000) / 100000
 end
