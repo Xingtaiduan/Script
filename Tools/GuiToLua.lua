@@ -75,7 +75,7 @@ local Dump = isfile("Dump.json") and readfile("Dump.json")
 
 if Version ~= readfile("Version.txt") or not Dump then
     writefile("Version.txt", Version)
-    Dump = game:HttpGet("http://setup.roblox.com/"..Version.."-API-Dump.json")
+    Dump = game:HttpGet("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/Mini-API-Dump.json")
     writefile("Dump.json", Dump)
 end
 
@@ -273,7 +273,8 @@ end;
 
 local BLACKLIST = {
 	Source = true,
-	Parent = true
+	Parent = true,
+	DragUDim2 = true
 }
 
 --// STRUCT \\--
