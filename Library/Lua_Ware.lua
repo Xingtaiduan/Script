@@ -13,6 +13,24 @@ local UserInputService = cloneref(game:GetService("UserInputService"))
 local gethui = gethui or function() return CoreGui end
 local mouse = cloneref(Players.LocalPlayer:GetMouse())
 
+local LocaleId = Players.LocalPlayer.LocaleId
+local ShouldTranslate = LocaleId ~= "zh-cn"
+local Translation
+if ShouldTranslate then
+    Translation = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/XATranslation.lua"))()
+end
+local function Translate(zhtext)
+    if not ShouldTranslate then return zhtext end
+    if Translation[zhtext] then
+        return Translation[zhtext]
+    else
+        for zh, en in pairs(Translation) do
+            zhtext = zhtext:gsub(zh, en)
+        end
+        return zhtext
+    end
+end
+
 local function Tween(obj, t, data)
     TweenService:Create(obj, TweenInfo.new(t[1], Enum.EasingStyle[t[2]], Enum.EasingDirection[t[3]]), data):Play()
     return true
@@ -256,6 +274,7 @@ function Library.new(Library, name)
 
     local window = {}
     function window.Tab(window, name, icon)
+        name = Translate(name)
         local Tab = Instance.new("ScrollingFrame")
         local TabIco = Instance.new("ImageLabel")
         local TabText = Instance.new("TextLabel")
@@ -332,6 +351,7 @@ function Library.new(Library, name)
 
         local tab = {}
         function tab.Section(tab, name, TabVal)
+            name = Translate(name)
             local Section = Instance.new("Frame")
             local SectionC = Instance.new("UICorner")
             local SectionText = Instance.new("TextLabel")
@@ -427,6 +447,7 @@ function Library.new(Library, name)
 
             local section = {}
             function section.Button(section, text, callback)
+                text = Translate(text)
                 local callback = callback or function() end
 
                 local BtnModule = Instance.new("Frame")
@@ -472,6 +493,7 @@ function Library.new(Library, name)
             end
 
             function section:Label(text)
+                text = Translate(text)
                 local LabelModule = Instance.new("Frame")
                 local TextLabel = Instance.new("TextLabel")
                 local LabelC = Instance.new("UICorner")
@@ -499,6 +521,7 @@ function Library.new(Library, name)
             end
 
             function section.Toggle(section, text, flag, enabled, callback)
+                text = Translate(text)
                 local callback = callback or function() end
                 local enabled = enabled or false
                 assert(text, "No text provided")
@@ -593,6 +616,7 @@ function Library.new(Library, name)
             end
 
             function section.Keybind(section, text, default, callback)
+                text = Translate(text)
                 local callback = callback or function() end
                 assert(text, "No text provided")
                 assert(default, "No default key provided")
@@ -727,6 +751,7 @@ function Library.new(Library, name)
             end
 
             function section.Textbox(section, text, flag, default, callback)
+                text = Translate(text)
                 local callback = callback or function() end
                 assert(text, "No text provided")
                 assert(flag, "No flag provided")
@@ -823,6 +848,7 @@ function Library.new(Library, name)
             end
 
             function section.Slider(section, text, flag, default, min, max, precise, callback)
+                text = Translate(text)
                 local callback = callback or function() end
                 local min = min or 1
                 local max = max or 10
@@ -1057,6 +1083,7 @@ function Library.new(Library, name)
                 return funcs, SliderModule
             end
             function section.Dropdown(section, text, flag, options, default, callback)
+                text = Translate(text)
                 local callback = callback or function() end
                 if type(default) == "function" then
                     callback = default
