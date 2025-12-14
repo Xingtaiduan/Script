@@ -14,7 +14,7 @@ local gethui = gethui or function() return CoreGui end
 local mouse = cloneref(Players.LocalPlayer:GetMouse())
 
 local LocaleId = Players.LocalPlayer.LocaleId
-local ShouldTranslate = LocaleId ~= "zh-cn"
+local ShouldTranslate = LocaleId:sub(1, 2) ~= "zh"
 local Translation
 if ShouldTranslate then
     Translation = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/XATranslation.lua"))()
