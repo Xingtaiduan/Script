@@ -13,7 +13,7 @@ local UserInputService = cloneref(game:GetService("UserInputService"))
 local gethui = gethui or function() return CoreGui end
 local mouse = cloneref(Players.LocalPlayer:GetMouse())
 
-local LocaleId = game:GetService("LocalizationService").SystemLocaleId
+local LocaleId = game:GetService("LocalizationService").RobloxLocaleId
 local ShouldTranslate = LocaleId:sub(1, 2) ~= "zh"
 local Translation
 if ShouldTranslate then
