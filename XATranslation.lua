@@ -66,7 +66,7 @@ return {
 ["动画为FE，别人能看见，对没有动画的服务器无效"] = "The animation is FE, visible to others, but doesn't work on servers without animations",
 ["搜索动画包"] = "Search animation packages",
 ["搜索结果"] = "Search result", ["加载动画"] = "Load animation",
-["输入动画ID"] = "Enter animation id", ["播放动画"] = "Play animation", ["停止播放所有动画"] = "Stop all animations", ["是否循环"] "Is Looped", ["动画播放速度"] = "Animation play speed", ["循环动画播放速度"] = "Loop animation play speed", ["工具"] = " tool",
+["输入动画ID"] = "Enter animation id", ["播放动画"] = "Play animation", ["停止播放所有动画"] = "Stop all animations", ["是否循环"] = "Is Looped", ["动画播放速度"] = "Animation play speed", ["循环动画播放速度"] = "Loop animation play speed", ["工具"] = " tool",
 ["游戏中的动画"] = "Animations in the game",
 ["选择动画"] = "Select animation", ["复制动画ID"] = "Copy animation id", ["刷新列表"] = "Refresh the list",
 ["正在播放的动画"] = "The currently playing animations",
