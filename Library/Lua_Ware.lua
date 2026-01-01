@@ -5,13 +5,32 @@ local Library = {}
 Library.currentTab = nil
 Library.flags = {}
 
+local lib = {RainbowColorValue = 0, HueSelectionPosition = 0}
+coroutine.wrap(
+    function()
+        while wait() do
+            lib.RainbowColorValue = lib.RainbowColorValue + 1 / 255
+            lib.HueSelectionPosition = lib.HueSelectionPosition + 1
+
+            if lib.RainbowColorValue >= 1 then
+                lib.RainbowColorValue = 0
+            end
+
+            if lib.HueSelectionPosition == 80 then
+                lib.HueSelectionPosition = 0
+            end
+        end
+    end
+)()
+
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local Players = cloneref(game:GetService("Players"))
 local TweenService = cloneref(game:GetService("TweenService"))
 local UserInputService = cloneref(game:GetService("UserInputService"))
+local RunService = cloneref(game:GetService("RunService"))
 
 local gethui = gethui or function() return CoreGui end
-local mouse = cloneref(Players.LocalPlayer:GetMouse())
+local Mouse = cloneref(Players.LocalPlayer:GetMouse())
 
 local LocaleId = game:GetService("LocalizationService").RobloxLocaleId
 local ShouldTranslate = LocaleId:sub(1, 2) ~= "zh"
@@ -54,9 +73,9 @@ local function Ripple(obj)
             Ripple.ImageColor3 = Color3.fromRGB(255, 255, 255)
             Ripple.Position =
                 UDim2.new(
-                (mouse.X - Ripple.AbsolutePosition.X) / obj.AbsoluteSize.X,
+                (Mouse.X - Ripple.AbsolutePosition.X) / obj.AbsoluteSize.X,
                 0,
-                (mouse.Y - Ripple.AbsolutePosition.Y) / obj.AbsoluteSize.Y,
+                (Mouse.Y - Ripple.AbsolutePosition.Y) / obj.AbsoluteSize.Y,
                 0
             )
             Tween(
@@ -976,7 +995,7 @@ function Library.new(Library, name)
 
                 local funcs = {
                     SetValue = function(self, value)
-                        local percent = (mouse.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X
+                        local percent = (Mouse.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X
                         if value then
                             percent = (value - min) / (max - min)
                         end
@@ -1285,10 +1304,487 @@ function Library.new(Library, name)
 
                 return funcs
             end
+            
+        function section.Colorpicker(section, text, preset, callback)
+            local ColorPickerToggled = false
+            local OldToggleColor = Color3.fromRGB(0, 0, 0)
+            local OldColor = Color3.fromRGB(0, 0, 0)
+            local OldColorSelectionPosition = nil
+            local OldHueSelectionPosition = nil
+            local ColorH, ColorS, ColorV = 1, 1, 1
+            local RainbowColorPicker = false
+            local ColorPickerInput = nil
+            local ColorInput = nil
+            local HueInput = nil
+
+            local Colorpicker = Instance.new("Frame")
+            local ColorpickerCorner = Instance.new("UICorner")
+            local ColorpickerTitle = Instance.new("TextLabel")
+            local BoxColor = Instance.new("Frame")
+            local BoxColorCorner = Instance.new("UICorner")
+            local ConfirmBtn = Instance.new("TextButton")
+            local ConfirmBtnCorner = Instance.new("UICorner")
+            local ConfirmBtnTitle = Instance.new("TextLabel")
+            local ColorpickerBtn = Instance.new("TextButton")
+            local RainbowToggle = Instance.new("TextButton")
+            local RainbowToggleCorner = Instance.new("UICorner")
+            local RainbowToggleTitle = Instance.new("TextLabel")
+            local FrameRainbowToggle1 = Instance.new("Frame")
+            local FrameRainbowToggle1Corner = Instance.new("UICorner")
+            local FrameRainbowToggle2 = Instance.new("Frame")
+            local FrameRainbowToggle2_2 = Instance.new("UICorner")
+            local FrameRainbowToggle3 = Instance.new("Frame")
+            local FrameToggle3 = Instance.new("UICorner")
+            local FrameRainbowToggleCircle = Instance.new("Frame")
+            local FrameRainbowToggleCircleCorner = Instance.new("UICorner")
+            local Color = Instance.new("ImageLabel")
+            local ColorCorner = Instance.new("UICorner")
+            local ColorSelection = Instance.new("ImageLabel")
+            local Hue = Instance.new("ImageLabel")
+            local HueCorner = Instance.new("UICorner")
+            local HueGradient = Instance.new("UIGradient")
+            local HueSelection = Instance.new("ImageLabel")
+
+            Colorpicker.Name = "Colorpicker"
+            Colorpicker.Parent = Objs
+            Colorpicker.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Colorpicker.ClipsDescendants = true
+            Colorpicker.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
+            Colorpicker.Size = UDim2.new(0, 428, 0, 42) --origin 363
+
+            ColorpickerCorner.CornerRadius = UDim.new(0, 5)
+            ColorpickerCorner.Name = "ColorpickerCorner"
+            ColorpickerCorner.Parent = Colorpicker
+
+            ColorpickerTitle.Name = "ColorpickerTitle"
+            ColorpickerTitle.Parent = Colorpicker
+            ColorpickerTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ColorpickerTitle.BackgroundTransparency = 1.000
+            ColorpickerTitle.Position = UDim2.new(0.0358126722, 0, 0, 0)
+            ColorpickerTitle.Size = UDim2.new(0, 187, 0, 42)
+            ColorpickerTitle.Font = Enum.Font.Gotham
+            ColorpickerTitle.Text = text
+            ColorpickerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ColorpickerTitle.TextSize = 14.000
+            ColorpickerTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+            BoxColor.Name = "BoxColor"
+            BoxColor.Parent = ColorpickerTitle
+            BoxColor.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
+            BoxColor.Position = UDim2.new(1.60427809, 65, 0.214285716, 0)
+            BoxColor.Size = UDim2.new(0, 41, 0, 23)
+
+            BoxColorCorner.CornerRadius = UDim.new(0, 5)
+            BoxColorCorner.Name = "BoxColorCorner"
+            BoxColorCorner.Parent = BoxColor
+
+            ConfirmBtn.Name = "ConfirmBtn"
+            ConfirmBtn.Parent = ColorpickerTitle
+            ConfirmBtn.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            ConfirmBtn.Position = UDim2.new(1.25814295, 65, 1.09037197, 0)
+            ConfirmBtn.Size = UDim2.new(0, 105, 0, 32)
+            ConfirmBtn.AutoButtonColor = false
+            ConfirmBtn.Font = Enum.Font.SourceSans
+            ConfirmBtn.Text = ""
+            ConfirmBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+            ConfirmBtn.TextSize = 14.000
+
+            ConfirmBtnCorner.CornerRadius = UDim.new(0, 5)
+            ConfirmBtnCorner.Name = "ConfirmBtnCorner"
+            ConfirmBtnCorner.Parent = ConfirmBtn
+
+            ConfirmBtnTitle.Name = "ConfirmBtnTitle"
+            ConfirmBtnTitle.Parent = ConfirmBtn
+            ConfirmBtnTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ConfirmBtnTitle.BackgroundTransparency = 1.000
+            ConfirmBtnTitle.Size = UDim2.new(0, 33, 0, 32)
+            ConfirmBtnTitle.Font = Enum.Font.Gotham
+            ConfirmBtnTitle.Text = "确定"
+            ConfirmBtnTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ConfirmBtnTitle.TextSize = 14.000
+            ConfirmBtnTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+            ColorpickerBtn.Name = "ColorpickerBtn"
+            ColorpickerBtn.Parent = ColorpickerTitle
+            ColorpickerBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ColorpickerBtn.BackgroundTransparency = 1.000
+            ColorpickerBtn.Size = UDim2.new(0, 363, 0, 42)
+            ColorpickerBtn.Font = Enum.Font.SourceSans
+            ColorpickerBtn.Text = ""
+            ColorpickerBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+            ColorpickerBtn.TextSize = 14.000
+
+            RainbowToggle.Name = "RainbowToggle"
+            RainbowToggle.Parent = ColorpickerTitle
+            RainbowToggle.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            RainbowToggle.Position = UDim2.new(1.26349044, 65, 2.12684202, 0)
+            RainbowToggle.Size = UDim2.new(0, 104, 0, 32)
+            RainbowToggle.AutoButtonColor = false
+            RainbowToggle.Font = Enum.Font.SourceSans
+            RainbowToggle.Text = ""
+            RainbowToggle.TextColor3 = Color3.fromRGB(0, 0, 0)
+            RainbowToggle.TextSize = 14.000
+
+            RainbowToggleCorner.CornerRadius = UDim.new(0, 5)
+            RainbowToggleCorner.Name = "RainbowToggleCorner"
+            RainbowToggleCorner.Parent = RainbowToggle
+
+            RainbowToggleTitle.Name = "RainbowToggleTitle"
+            RainbowToggleTitle.Parent = RainbowToggle
+            RainbowToggleTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            RainbowToggleTitle.BackgroundTransparency = 1.000
+            RainbowToggleTitle.Size = UDim2.new(0, 33, 0, 32)
+            RainbowToggleTitle.Font = Enum.Font.Gotham
+            RainbowToggleTitle.Text = "彩虹"
+            RainbowToggleTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+            RainbowToggleTitle.TextSize = 14.000
+            RainbowToggleTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+            FrameRainbowToggle1.Name = "FrameRainbowToggle1"
+            FrameRainbowToggle1.Parent = RainbowToggle
+            FrameRainbowToggle1.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            FrameRainbowToggle1.Position = UDim2.new(0.649999976, 0, 0.186000004, 0)
+            FrameRainbowToggle1.Size = UDim2.new(0, 37, 0, 18)
+
+            FrameRainbowToggle1Corner.Name = "FrameRainbowToggle1Corner"
+            FrameRainbowToggle1Corner.Parent = FrameRainbowToggle1
+
+            FrameRainbowToggle2.Name = "FrameRainbowToggle2"
+            FrameRainbowToggle2.Parent = FrameRainbowToggle1
+            FrameRainbowToggle2.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            FrameRainbowToggle2.Position = UDim2.new(0.0590000004, 0, 0.112999998, 0)
+            FrameRainbowToggle2.Size = UDim2.new(0, 33, 0, 14)
+
+            FrameRainbowToggle2_2.Name = "FrameRainbowToggle2"
+            FrameRainbowToggle2_2.Parent = FrameRainbowToggle2
+
+            FrameRainbowToggle3.Name = "FrameRainbowToggle3"
+            FrameRainbowToggle3.Parent = FrameRainbowToggle1
+            FrameRainbowToggle3.BackgroundColor3 = Color3.fromRGB(44, 120, 224)
+            FrameRainbowToggle3.BackgroundTransparency = 1.000
+            FrameRainbowToggle3.Size = UDim2.new(0, 37, 0, 18)
+
+            FrameToggle3.Name = "FrameToggle3"
+            FrameToggle3.Parent = FrameRainbowToggle3
+
+            FrameRainbowToggleCircle.Name = "FrameRainbowToggleCircle"
+            FrameRainbowToggleCircle.Parent = FrameRainbowToggle1
+            FrameRainbowToggleCircle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            FrameRainbowToggleCircle.Position = UDim2.new(0.127000004, 0, 0.222000003, 0)
+            FrameRainbowToggleCircle.Size = UDim2.new(0, 10, 0, 10)
+
+            FrameRainbowToggleCircleCorner.Name = "FrameRainbowToggleCircleCorner"
+            FrameRainbowToggleCircleCorner.Parent = FrameRainbowToggleCircle
+
+            Color.Name = "Color"
+            Color.Parent = ColorpickerTitle
+            Color.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
+            Color.Position = UDim2.new(0, 0, 0, 42)
+            Color.Size = UDim2.new(0, 259, 0, 80)
+            Color.ZIndex = 1
+            Color.Image = "rbxassetid://4155801252"
+
+            ColorCorner.CornerRadius = UDim.new(0, 3)
+            ColorCorner.Name = "ColorCorner"
+            ColorCorner.Parent = Color
+
+            ColorSelection.Name = "ColorSelection"
+            ColorSelection.Parent = Color
+            ColorSelection.AnchorPoint = Vector2.new(0.5, 0.5)
+            ColorSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ColorSelection.BackgroundTransparency = 1.000
+            ColorSelection.Position = UDim2.new(preset and select(3, Color3.toHSV(preset)))
+            ColorSelection.Size = UDim2.new(0, 18, 0, 18)
+            ColorSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
+            ColorSelection.ScaleType = Enum.ScaleType.Fit
+            ColorSelection.Visible = false
+
+            Hue.Name = "Hue"
+            Hue.Parent = ColorpickerTitle
+            Hue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Hue.Position = UDim2.new(0, 267, 0, 42)
+            Hue.Size = UDim2.new(0, 25, 0, 80)
+
+            HueCorner.CornerRadius = UDim.new(0, 3)
+            HueCorner.Name = "HueCorner"
+            HueCorner.Parent = Hue
+
+            HueGradient.Color =
+                ColorSequence.new {
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)),
+                ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)),
+                ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)),
+                ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)),
+                ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)),
+                ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)),
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))
+            }
+            HueGradient.Rotation = 270
+            HueGradient.Name = "HueGradient"
+            HueGradient.Parent = Hue
+
+            HueSelection.Name = "HueSelection"
+            HueSelection.Parent = Hue
+            HueSelection.AnchorPoint = Vector2.new(0.5, 0.5)
+            HueSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            HueSelection.BackgroundTransparency = 1.000
+            HueSelection.Position = UDim2.new(0.48, 0, 1 - select(1, Color3.toHSV(preset)))
+            HueSelection.Size = UDim2.new(0, 18, 0, 18)
+            HueSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
+            HueSelection.Visible = false
+
+            ColorpickerBtn.MouseButton1Click:Connect(
+                function()
+                    if ColorPickerToggled == false then
+                        ColorSelection.Visible = true
+                        HueSelection.Visible = true
+                        Colorpicker:TweenSize(
+                            UDim2.new(0, 428, 0, 132),
+                            Enum.EasingDirection.Out,
+                            Enum.EasingStyle.Quart,
+                            .2,
+                            true
+                        )
+                        wait(.2)
+                        Tab.CanvasSize = UDim2.new(0, 0, 0, TabL.AbsoluteContentSize.Y)
+                    else
+                        ColorSelection.Visible = false
+                        HueSelection.Visible = false
+                        Colorpicker:TweenSize(
+                            UDim2.new(0, 428, 0, 42),
+                            Enum.EasingDirection.Out,
+                            Enum.EasingStyle.Quart,
+                            .2,
+                            true
+                        )
+                        wait(.2)
+                        Tab.CanvasSize = UDim2.new(0, 0, 0, TabL.AbsoluteContentSize.Y)
+                    end
+                    ColorPickerToggled = not ColorPickerToggled
+                end
+            )
+
+            local function UpdateColorPicker(nope)
+                BoxColor.BackgroundColor3 = Color3.fromHSV(ColorH, ColorS, ColorV)
+                Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
+
+                pcall(callback, BoxColor.BackgroundColor3)
+            end
+
+            ColorH =
+                1 -
+                (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) /
+                    Hue.AbsoluteSize.Y)
+            ColorS =
+                (math.clamp(ColorSelection.AbsolutePosition.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) /
+                Color.AbsoluteSize.X)
+            ColorV =
+                1 -
+                (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) /
+                    Color.AbsoluteSize.Y)
+
+            BoxColor.BackgroundColor3 = preset
+            Color.BackgroundColor3 = preset
+            pcall(callback, BoxColor.BackgroundColor3)
+
+            Color.InputBegan:Connect(
+                function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if RainbowColorPicker then
+                            return
+                        end
+
+                        if ColorInput then
+                            ColorInput:Disconnect()
+                        end
+
+                        ColorInput =
+                            RunService.RenderStepped:Connect(
+                            function()
+                                local ColorX =
+                                    (math.clamp(Mouse.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) /
+                                    Color.AbsoluteSize.X)
+                                local ColorY =
+                                    (math.clamp(Mouse.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) /
+                                    Color.AbsoluteSize.Y)
+
+                                ColorSelection.Position = UDim2.new(ColorX, 0, ColorY, 0)
+                                ColorS = ColorX
+                                ColorV = 1 - ColorY
+
+                                UpdateColorPicker(true)
+                            end
+                        )
+                    end
+                end
+            )
+
+            Color.InputEnded:Connect(
+                function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if ColorInput then
+                            ColorInput:Disconnect()
+                        end
+                    end
+                end
+            )
+
+            Hue.InputBegan:Connect(
+                function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if RainbowColorPicker then
+                            return
+                        end
+
+                        if HueInput then
+                            HueInput:Disconnect()
+                        end
+
+                        HueInput =
+                            RunService.RenderStepped:Connect(
+                            function()
+                                local HueY =
+                                    (math.clamp(Mouse.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) /
+                                    Hue.AbsoluteSize.Y)
+
+                                HueSelection.Position = UDim2.new(0.48, 0, HueY, 0)
+                                ColorH = 1 - HueY
+
+                                UpdateColorPicker(true)
+                            end
+                        )
+                    end
+                end
+            )
+
+            Hue.InputEnded:Connect(
+                function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if HueInput then
+                            HueInput:Disconnect()
+                        end
+                    end
+                end
+            )
+
+            RainbowToggle.MouseButton1Down:Connect(
+                function()
+                    RainbowColorPicker = not RainbowColorPicker
+
+                    if ColorInput then
+                        ColorInput:Disconnect()
+                    end
+
+                    if HueInput then
+                        HueInput:Disconnect()
+                    end
+
+                    if RainbowColorPicker then
+                        TweenService:Create(
+                            FrameRainbowToggle1,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundTransparency = 1}
+                        ):Play()
+                        TweenService:Create(
+                            FrameRainbowToggle2,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundTransparency = 1}
+                        ):Play()
+                        TweenService:Create(
+                            FrameRainbowToggle3,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundTransparency = 0}
+                        ):Play()
+                        TweenService:Create(
+                            FrameRainbowToggleCircle,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}
+                        ):Play()
+                        FrameRainbowToggleCircle:TweenPosition(
+                            UDim2.new(0.587, 0, 0.222000003, 0),
+                            Enum.EasingDirection.Out,
+                            Enum.EasingStyle.Quart,
+                            .2,
+                            true
+                        )
+
+                        OldToggleColor = BoxColor.BackgroundColor3
+                        OldColor = Color.BackgroundColor3
+                        OldColorSelectionPosition = ColorSelection.Position
+                        OldHueSelectionPosition = HueSelection.Position
+
+                        while RainbowColorPicker do
+                            BoxColor.BackgroundColor3 = Color3.fromHSV(lib.RainbowColorValue, 1, 1)
+                            Color.BackgroundColor3 = Color3.fromHSV(lib.RainbowColorValue, 1, 1)
+
+                            ColorSelection.Position = UDim2.new(1, 0, 0, 0)
+                            HueSelection.Position = UDim2.new(0.48, 0, 0, lib.HueSelectionPosition)
+
+                            pcall(callback, BoxColor.BackgroundColor3)
+                            wait()
+                        end
+                    elseif not RainbowColorPicker then
+                        TweenService:Create(
+                            FrameRainbowToggle1,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundTransparency = 0}
+                        ):Play()
+                        TweenService:Create(
+                            FrameRainbowToggle2,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundTransparency = 0}
+                        ):Play()
+                        TweenService:Create(
+                            FrameRainbowToggle3,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundTransparency = 1}
+                        ):Play()
+                        TweenService:Create(
+                            FrameRainbowToggleCircle,
+                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}
+                        ):Play()
+                        FrameRainbowToggleCircle:TweenPosition(
+                            UDim2.new(0.127000004, 0, 0.222000003, 0),
+                            Enum.EasingDirection.Out,
+                            Enum.EasingStyle.Quart,
+                            .2,
+                            true
+                        )
+
+                        BoxColor.BackgroundColor3 = OldToggleColor
+                        Color.BackgroundColor3 = OldColor
+
+                        ColorSelection.Position = OldColorSelectionPosition
+                        HueSelection.Position = OldHueSelectionPosition
+
+                        pcall(callback, BoxColor.BackgroundColor3)
+                    end
+                end
+            )
+
+            ConfirmBtn.MouseButton1Click:Connect(
+                function()
+                    ColorSelection.Visible = false
+                    HueSelection.Visible = false
+                    Colorpicker:TweenSize(
+                        UDim2.new(0, 428, 0, 42),
+                        Enum.EasingDirection.Out,
+                        Enum.EasingStyle.Quart,
+                        .2,
+                        true
+                    )
+                    wait(.2)
+                    Tab.CanvasSize = UDim2.new(0, 0, 0, TabL.AbsoluteContentSize.Y)
+                end
+            )
+            Tab.CanvasSize = UDim2.new(0, 0, 0, TabL.AbsoluteContentSize.Y)
+        end
             return section
         end
         return tab
     end
     return window
 end
+
 return Library
